@@ -1,0 +1,19 @@
+{
+  "name": "angular-ui-scribble",
+  "version": "0.0.0",
+  "description": "Angular signature_pad wrapper",
+  "main": "angular-ui-scribble.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MomsFriendlyDevCo/angular-ui-scribble.git"
+  },
+  "author": "Mel Romero <melisa.rfigueroa@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MomsFriendlyDevCo/angular-ui-scribble/issues"
+  },
+  "homepage": "https://github.com/MomsFriendlyDevCo/angular-ui-scribble#readme"
+}
