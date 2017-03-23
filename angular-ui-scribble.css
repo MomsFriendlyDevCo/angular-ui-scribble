@@ -9,6 +9,12 @@
 	top: 0;
 	left: 0;
 }
+.scribble-canvas video {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
 .scribble-actions li {
 	list-style: none;
 	display: inline;

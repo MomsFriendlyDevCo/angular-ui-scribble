@@ -12,22 +12,61 @@ angular.module('angular-ui-scribble',[])
 				'<li><button ng-click="clearSignature()">Clear</button></li>'+
 				'<li ng-if=\'mode!="erase"\'><button ng-click="setMode(\'erase\')">Erase</button></li>'+
 				'<li ng-if=\'mode=="erase"\'><button ng-click="setMode(\'pen\')">Pen</button></li>'+
+				'<li ng-if=\'mode!="streaming" && !isMobile\'><button ng-click="setBackground()">Background</button></li>'+
+				'<li ng-if=\'mode=="streaming" && !isMobile\'><button ng-click="screenshot()">Screenshot</button></li>'+
 				'<li><input  id="selectBackground" type="file" accept="image/*" capture="camera"></lis>'+
 			'</ul>'+
 			'<div class="scribble-canvas" height="200" width="350">'+
-				'<canvas height="200" width="380" style="z-index:2;"></canvas>'+
-				'<canvas id="scribble-background" height="200" width="380" style="z-index:1;"></canvas>'+
+				'<video ng-show=\'mode=="streaming"\' height="200" width="380" autoplay id="videoFeed" style="z-index:2;"></video>'+
+				'<canvas  height="200" width="380" style="z-index:3;"></canvas>'+
+				'<canvas ng-show=\'mode!="streaming"\' id="scribble-background" height="200" width="380" style="z-index:1;"></canvas>'+
 				'<button ng-if="signatureReady" ng-click="callbackBtn({signature: signaturePad.toDataURL()})">Done</button>'+
 			'</div>'+
 		'</div>',
 		controller: function($scope, $element, $attrs){
+			$scope.isMobile = false; //TODO: detect mobile/desktop version
 			$scope.mode = 'pen';
 			$scope.signaturePad;
+
 			var canvas = $element.find('canvas')[0];
 			var ctx = canvas.getContext('2d');
 			$scope.signaturePad = new SignaturePad(canvas);
 
-			$scope.isMobile = true;
+			var video = document.querySelector('#videoFeed');
+			var videoStream;
+			// check for getUserMedia support
+			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
+			navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
+
+			$scope.setBackground = function(){
+				// start video feed
+				$scope.setMode('streaming');
+
+				// get webcam feed if available
+				navigator.getUserMedia({video: true}, handleVideo, videoError);
+			};
+
+			function handleVideo(stream){
+				video.src = window.URL.createObjectURL(stream);
+				videoStream = stream.getTracks()[0];
+			}
+
+			function videoError(){}
+
+			$scope.screenshot = function(){
+				$scope.setMode('pen');
+				if(video.paused || video.ended) console.log("no video");;
+				if(video.paused || video.ended) return false;
+
+				var background = document.getElementById('scribble-background');
+				var backgroundCtx = background.getContext('2d');
+				var width = background.width;
+				var height = background.height;
+
+				backgroundCtx.drawImage(video, 0, 0, width, height);
+				videoStream.stop();
+			};
+
 
 			// Expose original signaturePad object
 			$scope.config.getSignaturePad = function(){
@@ -103,6 +142,7 @@ angular.module('angular-ui-scribble',[])
 
 				image.src = dataUrl;
 				image.onload = function () {
+					backgroundCtx.clearRect(0, 0, canvas.width, canvas.height);
 						backgroundCtx.drawImage(image, 0, 0, width, height);
 				};
 			}
