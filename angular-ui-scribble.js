@@ -43,7 +43,7 @@ angular.module('angular-ui-scribble',[])
 				$scope.setMode('streaming');
 
 				// get webcam feed if available
-				navigator.getUserMedia({video: true}, handleVideo, videoError);
+				if(navigator.getUserMedia) navigator.getUserMedia({video: true}, handleVideo, videoError);
 			};
 
 			function handleVideo(stream){
