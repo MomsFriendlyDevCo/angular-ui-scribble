@@ -1,35 +1,10 @@
 /* Demo css*/
-*{
+* {
 	font-family: verdana, arial,sans-serif;
 }
-pre{
+pre {
 	width: 70%;
 }
-.scribble-canvas canvas{
+.scribble-canvas canvas {
 	border: 1px solid #f4f4f4;
-}
-/* Add to package css*/
-.scribble-canvas {
-	position: relative;
-	overflow: auto;
-	height: 230px;
-	/*height: 100%;*/
-}
-.scribble-canvas canvas{
-	position: absolute;
-	top: 0;
-	left: 0;
-}
-.scribble-actions li{
-	list-style: none;
-	display: inline;
-	width: 100px;
-}
-.scribble-actions button{
-	width: 70px;
-}
-.scribble-canvas button{
-	position: absolute;
-	bottom: 0px;
-	left: 340px;
 }
