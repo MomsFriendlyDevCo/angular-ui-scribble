@@ -1,7 +1,11 @@
 angular.module('angular-ui-scribble',[])
 .directive('uiScribble', function(){
 	return {
-		scope:{},
+		scope:{
+			config:'=?',
+			callbackFn: '&',
+			callbackBtn: '&'
+		},
 		template:
 		`<div class="scribble">
 			<ul class="scribble-actions">
@@ -13,20 +17,44 @@ angular.module('angular-ui-scribble',[])
 			<div class="scribble-canvas" height="200" width="350">
 				<canvas height="200" width="380" style="z-index:2;"></canvas>
 				<canvas id="scribble-background" height="200" width="380" style="z-index:1;"></canvas>
+				<button ng-if="signatureReady" ng-click="callbackBtn({signature: signaturePad.toDataURL()})">Done</button>
 			</div>
 		</div>`,
-		controller: function($scope, $element){
+		controller: function($scope, $element, $attrs){
 			$scope.mode = 'pen';
-			var signaturePad;
+			$scope.signaturePad;
 			var canvas = $element.find('canvas')[0];
 			var ctx = canvas.getContext('2d');
-			signaturePad = new SignaturePad(canvas);
+			$scope.signaturePad = new SignaturePad(canvas);
 
 			$scope.isMobile = true;
 
-			$scope.clearSignature = function(){
-				signaturePad.clear();
+			// Expose original signaturePad object
+			$scope.config.getSignaturePad = function(){
+				return signaturePad;
 			};
+
+			$scope.clearSignature = function(){
+				$scope.signaturePad.clear();
+			};
+
+			$scope.signaturePad.onBegin = function(e){
+				$scope.$applyAsync(function(){
+					$scope.signatureReady = false;
+				});
+			};
+
+			function signatureReady(){
+				$scope.$applyAsync(function(){
+					if ($attrs.callbackFn && typeof $scope.callbackFn === 'function') {
+						$scope.callbackFn($scope.signaturePad.toDataURL());
+					} else if($attrs.callbackBtn && typeof $scope.callbackBtn === 'function') {
+						$scope.signatureReady = true;
+					}
+				});
+			}
+
+			$scope.signaturePad.onEnd = _.debounce(signatureReady, 1500)
 
 			$scope.setMode = function(mode){
 				$scope.mode = mode;
@@ -36,16 +64,16 @@ angular.module('angular-ui-scribble',[])
 				if (newVal == 'erase' && newVal !== oldVal) {
 					$scope.oldStroke = {
 						oldComposition: ctx.globalCompositeOperation,
-						minWidth: signaturePad.minWidth,
-						maxWidth: signaturePad.maxWidth
+						minWidth: $scope.signaturePad.minWidth,
+						maxWidth: $scope.signaturePad.maxWidth
 					};
 					ctx.globalCompositeOperation = 'destination-out';
-					signaturePad.minWidth = 6;
-					signaturePad.maxWidth = 8;
+					$scope.signaturePad.minWidth = 6;
+					$scope.signaturePad.maxWidth = 8;
 				} else if (oldVal == 'erase') {
 					ctx.globalCompositeOperation = $scope.oldStroke.oldComposition;
-					signaturePad.minWidth = $scope.oldStroke.minWidth;
-					signaturePad.maxWidth = $scope.oldStroke.maxWidth;
+					$scope.signaturePad.minWidth = $scope.oldStroke.minWidth;
+					$scope.signaturePad.maxWidth = $scope.oldStroke.maxWidth;
 				}
 			});
 

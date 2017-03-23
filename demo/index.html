@@ -1,7 +1,10 @@
 <html>
 	<head>
 		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
-		<!-- <script src="../node_modules/signature_pad/signature_pad.js"></script> -->
+		<script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/styles/default.min.css">
+		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/highlight.min.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
 		<link rel="stylesheet" href="./style.css">
 		<!-- Angular-UI-Scribble -->
@@ -9,15 +12,37 @@
 	</head>
 	<body ng-app="app">
 		<div ng-controller="scribbleExampleCtrl">
+			<h2>Scribble 1</h2>
+			<pre><code class="html">Process signature immediately: &lt;ui-scribble callback-fn="callbackFn()"&gt;&lt;/ui-scribble&gt;</code></pre>
+			<ui-scribble config="config" callback-fn="callbackFn()"></ui-scribble>
+			<h2>Scribble 2</h2>
+			<pre><code class="html">Set callback to a button: &lt;ui-scribble callback-btn="callbackBtn(signature)"&gt;&lt;/ui-scribble&gt;</code></pre>
+			<ui-scribble config="config" callback-btn="callbackBtn(signature)"></ui-scribble>
+			<h2>Scribble 3</h2>
+			<pre><code class="html"> &lt;ui-scribble config="config"&gt;&lt;/ui-scribble&gt;</code></pre>
+			<pre><code class="javascript">function processForm(){
+	var signature = $scope.config.getSignaturePad().toDataURL()
+	...
+}</code></pre>
+			<ui-scribble config="config"></ui-scribble>
+		</div>
 
-			<h2>Scribble</h2>
-			<ui-scribble></ui-scribble>
 		<script>
 		var app = angular.module("app", [
 			'angular-ui-scribble'
 		]);
 
 		app.controller("scribbleExampleCtrl", function($scope) {
+			$scope.config  = {};
+
+			$scope.callbackFn = function(signature){
+				window.alert('Processing signature');
+			};
+
+			$scope.callbackBtn = function(signature){
+				window.alert('Processing signature');
+			};
+
 		});
 		</script>
 	</body>
