@@ -1,3 +1,23 @@
+/* Demo css*/
 .scribble-canvas canvas{
 	border: 1px solid #f4f4f4;
+}
+/* Add to package css*/
+.scribble-canvas {
+	position: relative;
+	overflow: auto;
+	height: 100%;
+}
+.scribble-canvas canvas{
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+.scribble-actions li{
+	list-style: none;
+	display: inline;
+	width: 100px;
+}
+.scribble-actions button{
+	width: 70px;
 }
