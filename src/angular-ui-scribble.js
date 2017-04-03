@@ -8,19 +8,23 @@ angular.module('angular-ui-scribble',[])
 		},
 		template: `
 			<div class="scribble">
-				<ul class="scribble-actions">
-					<li><button ng-click="clearSignature()">Clear</button></li>
-					<li ng-if="mode!='erase'"><button ng-click="setMode('erase')">Erase</button></li>
-					<li ng-if="mode=='erase'"><button ng-click="setMode('pen')">Pen</button></li>
-					<li ng-if="mode!='streaming' && !isMobile"><button ng-click="setBackground()">Background</button></li>
-					<li ng-if="mode=='streaming' && !isMobile"><button ng-click="screenshot()">Screenshot</button></li>
-					<li><input class="selectBackground" type="file" accept="image/*" capture="camera"></lis>
-				</ul>
-				<div class="scribble-canvas" height="{{scribbleHeight}}" width="{{scribbleWidth}}">
-					<video ng-show="mode=='streaming'" height="{{scribbleHeight}}" width="{{scribbleWidth}}" autoplay class="videoFeed" style="z-index:2;"></video>
-					<canvas class="scribble-board" height="{{scribbleHeight}}" width="{{scribbleWidth}}" style="z-index:3;"></canvas>
-					<canvas class="scribble-background" ng-show="mode!="streaming'" height="{{scribbleHeight}}" width="{{scribbleWidth}}" style="z-index:1;"></canvas>
-					<button ng-if="signatureReady" ng-click="callbackBtn({signature: getSignatureImage()})">Done</button>
+				<nav class="scribble-actions navbar navbar-default" style="width: {{scribbleWidth}}px">
+					<div class="container-fluid">
+						<ul class="nav navbar-nav">
+							<li><a ng-click="clearSignature()" class="btn btn-danger"><i class="fa fa-trash"></i></a></li>
+							<li ng-if="mode!='erase'"><a ng-click="setMode('erase')" tooltip="Eraser" class="btn btn-default"><i class="fa fa-eraser"></i></a></li>
+							<li ng-if="mode=='erase'"><a ng-click="setMode('pen')" tooltip="Pen" class="btn btn-default"><i class="fa fa-pencil"></i></a></li>
+							<li ng-if="mode!='streaming' && !isMobile" tooltip="Set background image"><a ng-click="setBackground()" class="btn btn-default"><i class="fa fa-image"></i></a></li>
+							<li ng-if="mode=='streaming' && !isMobile" tooltip="Take screenshot"><a ng-click="screenshot()" class="btn btn-default"><i class="fa fa-camera"></i></a></li>
+							<li><input class="selectBackground" type="file" accept="image/*" capture="camera"></lis>
+						</ul>
+					</div>
+				</nav>
+				<div class="scribble-area" style="width: {{scribbleWidth}}px; height: {{scribbleWidth}}px">
+					<canvas class="scribble-board" height="{{scribbleHeight}}" width="{{scribbleWidth}}"></canvas>
+					<video class="scribble-video" ng-show="mode=='streaming'" height="{{scribbleHeight}}" width="{{scribbleWidth}}" autoplay></video>
+					<canvas class="scribble-background" ng-show="mode!='streaming'" height="{{scribbleHeight}}" width="{{scribbleWidth}}"></canvas>
+					<a ng-if="signatureReady" ng-click="callbackBtn({signature: getSignatureImage()})" class="btn btn-success btn-circular btn-fab"><i class="fa fa-fw fa-check fa-2x"></i></a>
 				</div>
 				<canvas class="scribble-composed" ng-show=false height="{{scribbleHeight}}" width="{{scribbleWidth}}" ></canvas>
 			</div>
@@ -49,11 +53,10 @@ angular.module('angular-ui-scribble',[])
 
 			$scope.signaturePad = new SignaturePad(canvas);
 
-			var video = $element[0].querySelector('.videoFeed');
+			var video = $element[0].querySelector('.scribble-video');
 			var videoStream;
 			// check for getUserMedia support
-			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
-			navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
+			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
 
 			$scope.setBackground = function(){
 				// start video feed
