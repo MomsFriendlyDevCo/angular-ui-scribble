@@ -14,12 +14,12 @@ angular.module('angular-ui-scribble',[])
 				'<li ng-if=\'mode=="erase"\'><button ng-click="setMode(\'pen\')">Pen</button></li>'+
 				'<li ng-if=\'mode!="streaming" && !isMobile\'><button ng-click="setBackground()">Background</button></li>'+
 				'<li ng-if=\'mode=="streaming" && !isMobile\'><button ng-click="screenshot()">Screenshot</button></li>'+
-				'<li><input  id="selectBackground" type="file" accept="image/*" capture="camera"></lis>'+
+				'<li><input  class="selectBackground" type="file" accept="image/*" capture="camera"></lis>'+
 			'</ul>'+
-			'<div class="scribble-canvas" height="200" width="350">'+
-				'<video ng-show=\'mode=="streaming"\' height="200" width="380" autoplay id="videoFeed" style="z-index:2;"></video>'+
-				'<canvas  height="200" width="380" style="z-index:3;"></canvas>'+
-				'<canvas ng-show=\'mode!="streaming"\' id="scribble-background" height="200" width="380" style="z-index:1;"></canvas>'+
+			'<div class="scribble-canvas" height="{{scribbleHeight}}" width="{{scribbleWidth}}">'+
+				'<video ng-show=\'mode=="streaming"\' height="{{scribbleHeight}}" width="{{scribbleWidth}}" autoplay class="videoFeed" style="z-index:2;"></video>'+
+				'<canvas class="scribble-board" height="{{scribbleHeight}}" width="{{scribbleWidth}}" style="z-index:3;"></canvas>'+
+				'<canvas class="scribble-background" ng-show=\'mode!="streaming"\' height="{{scribbleHeight}}" width="{{scribbleWidth}}" style="z-index:1;"></canvas>'+
 				'<button ng-if="signatureReady" ng-click="callbackBtn({signature: signaturePad.toDataURL()})">Done</button>'+
 			'</div>'+
 		'</div>',
@@ -27,12 +27,25 @@ angular.module('angular-ui-scribble',[])
 			$scope.isMobile = false; //TODO: detect mobile/desktop version
 			$scope.mode = 'pen';
 			$scope.signaturePad;
+			$scope.scribbleHeight = 400;
+			$scope.scribbleWidth = 400;
 
-			var canvas = $element.find('canvas')[0];
+			var canvas = $element[0].querySelector('.scribble-board');
 			var ctx = canvas.getContext('2d');
+
+			var canvasBackground = $element[0].querySelector('.scribble-background');
+			var ctxBackground = canvasBackground.getContext('2d');
+
+			// Flip the screenshot {{{
+			//TODO: not flipping the screenshot
+			var reversed = false;
+			// ctxBackground.translate(canvasBackground.width, 0);
+			// ctxBackground.scale(-1, 1);
+			// }}}
+
 			$scope.signaturePad = new SignaturePad(canvas);
 
-			var video = document.querySelector('#videoFeed');
+			var video = $element[0].querySelector('.videoFeed');
 			var videoStream;
 			// check for getUserMedia support
 			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
@@ -48,7 +61,8 @@ angular.module('angular-ui-scribble',[])
 
 			function handleVideo(stream){
 				video.src = window.URL.createObjectURL(stream);
-				videoStream = stream.getTracks()[0];
+				streamOriginal = stream;
+				videoStream = stream
 			}
 
 			function videoError(){}
@@ -57,16 +71,17 @@ angular.module('angular-ui-scribble',[])
 				$scope.setMode('pen');
 				if(video.paused || video.ended) console.log("no video");;
 				if(video.paused || video.ended) return false;
+				//TODO: hack to flip context only once {{{
+				if (!reversed) {
+					reversed = true;
+					ctxBackground.translate(canvasBackground.width, 0);
+					ctxBackground.scale(-1, 1);
+				}
+				// }}}
 
-				var background = document.getElementById('scribble-background');
-				var backgroundCtx = background.getContext('2d');
-				var width = background.width;
-				var height = background.height;
-
-				backgroundCtx.drawImage(video, 0, 0, width, height);
-				videoStream.stop();
+				ctxBackground.drawImage(video, 0, 0, $scope.scribbleWidth, $scope.scribbleHeight);
+				videoStream.getTracks()[0].stop();
 			};
-
 
 			// Expose original signaturePad object
 			$scope.config.getSignaturePad = function(){
@@ -116,9 +131,8 @@ angular.module('angular-ui-scribble',[])
 				}
 			});
 
-			// Background {{{
-
-			var selectBackground = document.getElementById('selectBackground');
+			// Background - mobile {{{
+			var selectBackground = $element[0].querySelector('.selectBackground')
 			var reader;
 
 			selectBackground.addEventListener('change', function(e){
@@ -133,17 +147,13 @@ angular.module('angular-ui-scribble',[])
 			});
 
 			function loadBackground(dataUrl){
-				var background = document.getElementById('scribble-background');
-				var backgroundCtx = background.getContext('2d');
 				var image = new Image();
 				var ratio = window.devicePixelRatio || 1;
-				var width = background.width;
-				var height = background.height;
 
 				image.src = dataUrl;
 				image.onload = function () {
-					backgroundCtx.clearRect(0, 0, canvas.width, canvas.height);
-						backgroundCtx.drawImage(image, 0, 0, width, height);
+					ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
+						ctxBackground.drawImage(image, 0, 0, canvasBackground.width, canvasBackground.height);
 				};
 			}
 			// }}}
