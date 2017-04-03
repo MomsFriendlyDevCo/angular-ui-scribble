@@ -20,8 +20,9 @@ angular.module('angular-ui-scribble',[])
 				'<video ng-show=\'mode=="streaming"\' height="{{scribbleHeight}}" width="{{scribbleWidth}}" autoplay class="videoFeed" style="z-index:2;"></video>'+
 				'<canvas class="scribble-board" height="{{scribbleHeight}}" width="{{scribbleWidth}}" style="z-index:3;"></canvas>'+
 				'<canvas class="scribble-background" ng-show=\'mode!="streaming"\' height="{{scribbleHeight}}" width="{{scribbleWidth}}" style="z-index:1;"></canvas>'+
-				'<button ng-if="signatureReady" ng-click="callbackBtn({signature: signaturePad.toDataURL()})">Done</button>'+
+				'<button ng-if="signatureReady" ng-click="callbackBtn({signature: getSignatureImage()})">Done</button>'+
 			'</div>'+
+			'<canvas class="scribble-composed" ng-show=false height="{{scribbleHeight}}" width="{{scribbleWidth}}" ></canvas>'+
 		'</div>',
 		controller: function($scope, $element, $attrs){
 			$scope.isMobile = false; //TODO: detect mobile/desktop version
@@ -35,6 +36,8 @@ angular.module('angular-ui-scribble',[])
 
 			var canvasBackground = $element[0].querySelector('.scribble-background');
 			var ctxBackground = canvasBackground.getContext('2d');
+			var composedImage = $element[0].querySelector('.scribble-composed');
+			var ctxComposed = composedImage.getContext('2d');
 
 			// Flip the screenshot {{{
 			//TODO: not flipping the screenshot
@@ -88,6 +91,17 @@ angular.module('angular-ui-scribble',[])
 				return signaturePad;
 			};
 
+			// Expose composed image
+			$scope.config.getSignatureImage = $scope.getSignatureImage;
+
+			// Returns composed image of background and foreground
+			$scope.getSignatureImage = function(){
+				ctxComposed.clearRect(0, 0, composedImage.width, composedImage.height);
+				ctxComposed.drawImage(canvasBackground, 0, 0);
+				ctxComposed.drawImage(canvas, 0, 0);
+				return composedImage.toDataURL();
+			};
+
 			$scope.clearSignature = function(){
 				$scope.signaturePad.clear();
 			};
@@ -101,7 +115,8 @@ angular.module('angular-ui-scribble',[])
 			function signatureReady(){
 				$scope.$applyAsync(function(){
 					if ($attrs.callbackFn && typeof $scope.callbackFn === 'function') {
-						$scope.callbackFn($scope.signaturePad.toDataURL());
+						var image = $scope.getSignatureImage();
+						$scope.callbackFn(image);
 					} else if($attrs.callbackBtn && typeof $scope.callbackBtn === 'function') {
 						$scope.signatureReady = true;
 					}
@@ -153,7 +168,7 @@ angular.module('angular-ui-scribble',[])
 				image.src = dataUrl;
 				image.onload = function () {
 					ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
-						ctxBackground.drawImage(image, 0, 0, canvasBackground.width, canvasBackground.height);
+					ctxBackground.drawImage(image, 0, 0, canvasBackground.width, canvasBackground.height);
 				};
 			}
 			// }}}
