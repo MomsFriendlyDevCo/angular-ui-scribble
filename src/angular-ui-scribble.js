@@ -6,24 +6,25 @@ angular.module('angular-ui-scribble',[])
 			callbackFn: '&',
 			callbackBtn: '&'
 		},
-		template:
-		'<div class="scribble">'+
-			'<ul class="scribble-actions">'+
-				'<li><button ng-click="clearSignature()">Clear</button></li>'+
-				'<li ng-if=\'mode!="erase"\'><button ng-click="setMode(\'erase\')">Erase</button></li>'+
-				'<li ng-if=\'mode=="erase"\'><button ng-click="setMode(\'pen\')">Pen</button></li>'+
-				'<li ng-if=\'mode!="streaming" && !isMobile\'><button ng-click="setBackground()">Background</button></li>'+
-				'<li ng-if=\'mode=="streaming" && !isMobile\'><button ng-click="screenshot()">Screenshot</button></li>'+
-				'<li><input  class="selectBackground" type="file" accept="image/*" capture="camera"></lis>'+
-			'</ul>'+
-			'<div class="scribble-canvas" height="{{scribbleHeight}}" width="{{scribbleWidth}}">'+
-				'<video ng-show=\'mode=="streaming"\' height="{{scribbleHeight}}" width="{{scribbleWidth}}" autoplay class="videoFeed" style="z-index:2;"></video>'+
-				'<canvas class="scribble-board" height="{{scribbleHeight}}" width="{{scribbleWidth}}" style="z-index:3;"></canvas>'+
-				'<canvas class="scribble-background" ng-show=\'mode!="streaming"\' height="{{scribbleHeight}}" width="{{scribbleWidth}}" style="z-index:1;"></canvas>'+
-				'<button ng-if="signatureReady" ng-click="callbackBtn({signature: getSignatureImage()})">Done</button>'+
-			'</div>'+
-			'<canvas class="scribble-composed" ng-show=false height="{{scribbleHeight}}" width="{{scribbleWidth}}" ></canvas>'+
-		'</div>',
+		template: `
+			<div class="scribble">
+				<ul class="scribble-actions">
+					<li><button ng-click="clearSignature()">Clear</button></li>
+					<li ng-if="mode!='erase'"><button ng-click="setMode('erase')">Erase</button></li>
+					<li ng-if="mode=='erase'"><button ng-click="setMode('pen')">Pen</button></li>
+					<li ng-if="mode!='streaming' && !isMobile"><button ng-click="setBackground()">Background</button></li>
+					<li ng-if="mode=='streaming' && !isMobile"><button ng-click="screenshot()">Screenshot</button></li>
+					<li><input class="selectBackground" type="file" accept="image/*" capture="camera"></lis>
+				</ul>
+				<div class="scribble-canvas" height="{{scribbleHeight}}" width="{{scribbleWidth}}">
+					<video ng-show="mode=='streaming'" height="{{scribbleHeight}}" width="{{scribbleWidth}}" autoplay class="videoFeed" style="z-index:2;"></video>
+					<canvas class="scribble-board" height="{{scribbleHeight}}" width="{{scribbleWidth}}" style="z-index:3;"></canvas>
+					<canvas class="scribble-background" ng-show="mode!="streaming'" height="{{scribbleHeight}}" width="{{scribbleWidth}}" style="z-index:1;"></canvas>
+					<button ng-if="signatureReady" ng-click="callbackBtn({signature: getSignatureImage()})">Done</button>
+				</div>
+				<canvas class="scribble-composed" ng-show=false height="{{scribbleHeight}}" width="{{scribbleWidth}}" ></canvas>
+			</div>
+		`,
 		controller: function($scope, $element, $attrs){
 			$scope.isMobile = false; //TODO: detect mobile/desktop version
 			$scope.mode = 'pen';
