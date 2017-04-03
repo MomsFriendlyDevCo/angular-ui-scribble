@@ -1,15 +1,36 @@
 <html>
 	<head>
-		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
+		<!-- jQuery -->
+		<script src="node_modules/jquery/dist/jquery.min.js"></script>
+
+		<!-- Bootstrap -->
+		<link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+		<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
+		<!-- Font-awesome -->
+		<link href="node_modules/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+
+		<!-- Lodash -->
+		<script src="node_modules/lodash/lodash.min.js"></script>
+
+		<!-- Angular -->
+		<script src="node_modules/angular/angular.min.js"></script>
+
+		<!-- Code highlighting -->
 		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/styles/default.min.css">
 		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/highlight.min.js"></script>
 		<script>hljs.initHighlightingOnLoad();</script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
-		<link rel="stylesheet" href="./style.css">
+
+		<!-- Signature_pad -->
+		<script src="node_modules/signature_pad/dist/signature_pad.min.js"></script>
+
+		<!-- Angular-UI-Scribble Demo -->
+		<script src="app.js"></script>
+		<link rel="stylesheet" href="style.css">
+
 		<!-- Angular-UI-Scribble -->
-		<script src="../angular-ui-scribble.js"></script>
-		<link rel="stylesheet" href="../angular-ui-scribble.css">
+		<script src="dist/angular-ui-scribble.js"></script>
+		<link rel="stylesheet" href="dist/angular-ui-scribble.css">
 	</head>
 	<body ng-app="app">
 		<div ng-controller="scribbleExampleCtrl">
@@ -27,24 +48,5 @@
 }</code></pre>
 			<ui-scribble config="config"></ui-scribble>
 		</div>
-
-		<script>
-		var app = angular.module("app", [
-			'angular-ui-scribble'
-		]);
-
-		app.controller("scribbleExampleCtrl", function($scope) {
-			$scope.config  = {};
-
-			$scope.callbackFn = function(signature){
-				window.alert('Processing signature');
-			};
-
-			$scope.callbackBtn = function(signature){
-				window.alert('Processing signature');
-			};
-
-		});
-		</script>
 	</body>
 </html>
