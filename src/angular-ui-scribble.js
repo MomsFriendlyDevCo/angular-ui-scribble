@@ -41,7 +41,10 @@ angular.module('angular-ui-scribble',[])
 							<li ng-if="mode=='erase'"><a ng-click="setMode('pen')" tooltip="Pen" class="btn btn-default"><i class="fa fa-pencil"></i></a></li>
 							<li ng-if="buttons.camera && mode!='streaming' && !isMobile" tooltip="Set background image"><a ng-click="setBackground()" class="btn btn-default"><i class="fa fa-image"></i></a></li>
 							<li ng-if="buttons.camera && mode=='streaming' && !isMobile" tooltip="Take screenshot"><a ng-click="screenshot()" class="btn btn-default"><i class="fa fa-camera"></i></a></li>
-							<li><input ng-show="buttons.camera" class="selectBackground" type="file" accept="image/*" capture="camera"></lis>
+							<li ng-show="buttons.camera && isMobile">
+								<input class="scrible-file-camera selectBackground" type="file" accept="image/*" capture="camera">
+								<a ng-click="requestCamera()" class="btn btn-default"><i class="fa fa-camera"></i></a>
+							</li>
 						</ul>
 					</div>
 				</nav>
@@ -55,7 +58,13 @@ angular.module('angular-ui-scribble',[])
 			</div>
 		`,
 		controller: function($scope, $element, $attrs, $debounce){
-			$scope.isMobile = false; //TODO: detect mobile/desktop version
+			// Mobile version {{{
+			var userAgent = navigator.userAgent;
+			$scope.isMobile = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(userAgent));
+			$scope.requestCamera = function(){
+				$element.find('input[type=file]').trigger('click');
+			};
+			// }}}
 			$scope.mode = 'pen';
 			$scope.signaturePad;
 			$scope.scribbleHeight = 400;
