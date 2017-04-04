@@ -1,4 +1,28 @@
 angular.module('angular-ui-scribble',[])
+.factory('$debounce', ['$timeout', function($timeout) {
+	/**
+	* @author Matt Carter <m@ttcarter.com>
+	* Calls fn once after timeout even if more than one call to debounced fn was made
+	* Edited version of the original part of ng-tools - https://github.com/capaj/ng-tools
+	*/
+	function debounce(callback, timeout, apply) {
+		timeout = angular.isUndefined(timeout) ? 0 : timeout;
+		apply = angular.isUndefined(apply) ? true : apply;
+		var callCount = 0;
+		return function() {
+			var self = this;
+			var args = arguments;
+			callCount++;
+			var wrappedCallback = (function(version) {
+				return function() {
+					if (version === callCount) return callback.apply(self, args);
+				};
+			})(callCount);
+			return $timeout(wrappedCallback, timeout, apply);
+		};
+	}
+	return debounce;
+}])
 .directive('uiScribble', function(){
 	return {
 		scope:{
@@ -30,7 +54,7 @@ angular.module('angular-ui-scribble',[])
 				<canvas class="scribble-composed" ng-show=false height="{{scribbleHeight}}" width="{{scribbleWidth}}" ></canvas>
 			</div>
 		`,
-		controller: function($scope, $element, $attrs){
+		controller: function($scope, $element, $attrs, $debounce){
 			$scope.isMobile = false; //TODO: detect mobile/desktop version
 			$scope.mode = 'pen';
 			$scope.signaturePad;
@@ -128,7 +152,7 @@ angular.module('angular-ui-scribble',[])
 				});
 			}
 
-			$scope.signaturePad.onEnd = _.debounce(signatureReady, 1500)
+			$scope.signaturePad.onEnd = $debounce(signatureReady, 1500, false);
 
 			$scope.setMode = function(mode){
 				$scope.mode = mode;

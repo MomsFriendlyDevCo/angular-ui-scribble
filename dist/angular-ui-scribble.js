@@ -1,6 +1,29 @@
 'use strict';
 
-angular.module('angular-ui-scribble', []).directive('uiScribble', function () {
+angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', function ($timeout) {
+	/**
+ * @author Matt Carter <m@ttcarter.com>
+ * Calls fn once after timeout even if more than one call to debounced fn was made
+ * Edited version of the original part of ng-tools - https://github.com/capaj/ng-tools
+ */
+	function debounce(callback, timeout, apply) {
+		timeout = angular.isUndefined(timeout) ? 0 : timeout;
+		apply = angular.isUndefined(apply) ? true : apply;
+		var callCount = 0;
+		return function () {
+			var self = this;
+			var args = arguments;
+			callCount++;
+			var wrappedCallback = function (version) {
+				return function () {
+					if (version === callCount) return callback.apply(self, args);
+				};
+			}(callCount);
+			return $timeout(wrappedCallback, timeout, apply);
+		};
+	}
+	return debounce;
+}]).directive('uiScribble', function () {
 	return {
 		scope: {
 			config: '=?',
@@ -9,7 +32,7 @@ angular.module('angular-ui-scribble', []).directive('uiScribble', function () {
 			buttons: '=?'
 		},
 		template: '\n\t\t\t<div class="scribble">\n\t\t\t\t<nav class="scribble-actions navbar navbar-default" style="width: {{scribbleWidth}}px">\n\t\t\t\t\t<div class="container-fluid">\n\t\t\t\t\t\t<ul class="nav navbar-nav">\n\t\t\t\t\t\t\t<li><a ng-click="clearSignature()" class="btn btn-danger"><i class="fa fa-trash"></i></a></li>\n\t\t\t\t\t\t\t<li ng-if="mode!=\'erase\'"><a ng-click="setMode(\'erase\')" tooltip="Eraser" class="btn btn-default"><i class="fa fa-eraser"></i></a></li>\n\t\t\t\t\t\t\t<li ng-if="mode==\'erase\'"><a ng-click="setMode(\'pen\')" tooltip="Pen" class="btn btn-default"><i class="fa fa-pencil"></i></a></li>\n\t\t\t\t\t\t\t<li ng-if="buttons.camera && mode!=\'streaming\' && !isMobile" tooltip="Set background image"><a ng-click="setBackground()" class="btn btn-default"><i class="fa fa-image"></i></a></li>\n\t\t\t\t\t\t\t<li ng-if="buttons.camera && mode==\'streaming\' && !isMobile" tooltip="Take screenshot"><a ng-click="screenshot()" class="btn btn-default"><i class="fa fa-camera"></i></a></li>\n\t\t\t\t\t\t\t<li><input ng-show="buttons.camera" class="selectBackground" type="file" accept="image/*" capture="camera"></lis>\n\t\t\t\t\t\t</ul>\n\t\t\t\t\t</div>\n\t\t\t\t</nav>\n\t\t\t\t<div class="scribble-area" style="width: {{scribbleWidth}}px; height: {{scribbleWidth}}px">\n\t\t\t\t\t<canvas class="scribble-board" height="{{scribbleHeight}}" width="{{scribbleWidth}}"></canvas>\n\t\t\t\t\t<video class="scribble-video" ng-show="mode==\'streaming\'" height="{{scribbleHeight}}" width="{{scribbleWidth}}" autoplay></video>\n\t\t\t\t\t<canvas class="scribble-background" ng-show="mode!=\'streaming\'" height="{{scribbleHeight}}" width="{{scribbleWidth}}"></canvas>\n\t\t\t\t\t<a ng-if="signatureReady" ng-click="callbackBtn({signature: getSignatureImage()})" class="btn btn-success btn-circular btn-fab"><i class="fa fa-fw fa-check fa-2x"></i></a>\n\t\t\t\t</div>\n\t\t\t\t<canvas class="scribble-composed" ng-show=false height="{{scribbleHeight}}" width="{{scribbleWidth}}" ></canvas>\n\t\t\t</div>\n\t\t',
-		controller: ["$scope", "$element", "$attrs", function controller($scope, $element, $attrs) {
+		controller: ["$scope", "$element", "$attrs", "$debounce", function controller($scope, $element, $attrs, $debounce) {
 			$scope.isMobile = false; //TODO: detect mobile/desktop version
 			$scope.mode = 'pen';
 			$scope.signaturePad;
@@ -107,7 +130,7 @@ angular.module('angular-ui-scribble', []).directive('uiScribble', function () {
 				});
 			}
 
-			$scope.signaturePad.onEnd = _.debounce(signatureReady, 1500);
+			$scope.signaturePad.onEnd = $debounce(signatureReady, 1500, false);
 
 			$scope.setMode = function (mode) {
 				$scope.mode = mode;
