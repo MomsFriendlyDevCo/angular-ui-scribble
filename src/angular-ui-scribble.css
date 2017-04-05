@@ -47,6 +47,9 @@
 	margin-left: -5px;
 	margin-top: 3px;
 }
-.scribble input[type=file].scribble-file-camera {
+.scribble input[type=file].scribble-file-camera,
+.scribble .scribble-composed
+{
 	display: none;
 }
+

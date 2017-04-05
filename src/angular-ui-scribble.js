@@ -29,6 +29,8 @@ angular.module('angular-ui-scribble',[])
 			callback: '&',
 			editable: '<',
 			buttons:'<',
+			width: '@?',
+			height: '@?',
 		},
 		template: `
 			<div class="scribble" ng-class="editable ? 'scribble-editable' : 'scribble-not-editable'">
@@ -47,13 +49,13 @@ angular.module('angular-ui-scribble',[])
 						</ul>
 					</div>
 				</nav>
-				<div class="scribble-area" style="width: {{width}}px; height: {{width}}px">
+				<div class="scribble-area" style="width: {{width}}px; height: {{height}}px">
 					<canvas class="scribble-board" height="{{height}}" width="{{width}}"></canvas>
 					<video class="scribble-video" ng-show="mode=='streaming'" height="{{height}}" width="{{width}}" autoplay></video>
 					<canvas class="scribble-background" ng-show="mode!='streaming'" height="{{height}}" width="{{width}}"></canvas>
 					<a ng-if="signatureReady" ng-click="submit()" class="btn btn-success btn-circular btn-fab"><i class="fa fa-fw fa-check fa-2x"></i></a>
 				</div>
-				<canvas class="scribble-composed" ng-show=false height="{{height}}" width="{{width}}" ></canvas>
+				<canvas class="scribble-composed" height="{{height}}" width="{{width}}"></canvas>
 			</div>
 		`,
 		controller: function($scope, $element, $debounce){
