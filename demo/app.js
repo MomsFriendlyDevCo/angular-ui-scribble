@@ -3,14 +3,8 @@ var app = angular.module("app", [
 ]);
 
 app.controller("scribbleExampleCtrl", function($scope) {
-	$scope.config  = {};
-
-	$scope.callbackFn = function(signature){
-		window.alert('Processing signature');
+	$scope.callback = function(image){
+		alert('Processing signature');
+		console.log('Got image', image);
 	};
-
-	$scope.callbackBtn = function(signature){
-		window.alert('Processing signature');
-	};
-
 });
