@@ -32,7 +32,7 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 			width: '@?',
 			height: '@?'
 		},
-		template: '\n\t\t\t<div class="scribble" ng-class="editable ? \'scribble-editable\' : \'scribble-not-editable\'">\n\t\t\t\t<input class="scribble-file-camera selectBackground" type="file" accept="image/*" capture="camera">\n\t\t\t\t<nav ng-if="editable" class="scribble-actions navbar navbar-default" style="width: {{width}}px">\n\t\t\t\t\t<div class="container-fluid">\n\t\t\t\t\t\t<ul class="nav navbar-nav">\n\t\t\t\t\t\t\t<li><a ng-click="clearSignature()" class="btn btn-danger"><i class="fa fa-trash"></i></a></li>\n\t\t\t\t\t\t\t<li ng-if="mode!=\'erase\'"><a ng-click="setMode(\'erase\')" tooltip="Eraser" class="btn btn-default"><i class="fa fa-eraser"></i></a></li>\n\t\t\t\t\t\t\t<li ng-if="mode==\'erase\'"><a ng-click="setMode(\'pen\')" tooltip="Pen" class="btn btn-default"><i class="fa fa-pencil"></i></a></li>\n\t\t\t\t\t\t\t<li ng-if="buttons.camera && mode!=\'streaming\' && !isMobile" tooltip="Set background image"><a ng-click="setBackground()" class="btn btn-default"><i class="fa fa-image"></i></a></li>\n\t\t\t\t\t\t\t<li ng-if="buttons.camera && mode==\'streaming\' && !isMobile" tooltip="Take screenshot"><a ng-click="screenshot()" class="btn btn-default"><i class="fa fa-camera"></i></a></li>\n\t\t\t\t\t\t\t<li ng-show="buttons.camera && isMobile">\n\t\t\t\t\t\t\t\t<a ng-click="requestCamera()" class="btn btn-default"><i class="fa fa-camera"></i></a>\n\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t</ul>\n\t\t\t\t\t</div>\n\t\t\t\t</nav>\n\t\t\t\t<div class="scribble-area" style="width: {{width}}px; height: {{height}}px">\n\t\t\t\t\t<canvas class="scribble-board" height="{{height}}" width="{{width}}"></canvas>\n\t\t\t\t\t<video class="scribble-video" ng-show="mode==\'streaming\'" height="{{height}}" width="{{width}}" autoplay></video>\n\t\t\t\t\t<canvas class="scribble-background" ng-show="mode!=\'streaming\'" height="{{height}}" width="{{width}}"></canvas>\n\t\t\t\t\t<a ng-if="signatureReady" ng-click="submit()" class="btn btn-success btn-circular btn-fab"><i class="fa fa-fw fa-check fa-2x"></i></a>\n\t\t\t\t</div>\n\t\t\t\t<canvas class="scribble-composed" height="{{height}}" width="{{width}}"></canvas>\n\t\t\t</div>\n\t\t',
+		template: '\n\t\t\t<div class="scribble" ng-class="editable ? \'scribble-editable\' : \'scribble-not-editable\'">\n\t\t\t\t<input class="scribble-file-camera selectBackground" type="file" accept="image/*" capture="camera">\n\t\t\t\t<nav ng-if="editable" class="scribble-actions navbar navbar-default" style="width: {{width}}px">\n\t\t\t\t\t<div class="container-fluid">\n\t\t\t\t\t\t<form class="navbar-form pull-left">\n\t\t\t\t\t\t\t<div class="btn-group">\n\t\t\t\t\t\t\t\t<a ng-if="buttons.camera && mode!=\'streaming\' && !isMobile" tooltip="Set background image" ng-click="setBackground()" class="btn btn-primary"><i class="fa fa-image"></i></a>\n\t\t\t\t\t\t\t\t<a ng-if="buttons.camera && mode==\'streaming\' && !isMobile" tooltip="Take screenshot" ng-click="screenshot()" class="btn btn-primary"><i class="fa fa-camera"></i></a>\n\t\t\t\t\t\t\t\t<a ng-if="buttons.camera && isMobile" ng-click="requestCamera()" class="btn btn-primary"><i class="fa fa-camera"></i></a>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div class="btn-group">\n\t\t\t\t\t\t\t\t<a ng-click="setMode(\'pen\')" ng-class="mode==\'pen\' && \'active\'" tooltip="Pen" class="btn btn-default"><i class="fa fa-pencil"></i></a>\n\t\t\t\t\t\t\t\t<a ng-click="setMode(\'erase\')" ng-class="mode==\'erase\' && \'active\'" tooltip="Eraser" class="btn btn-default"><i class="fa fa-eraser"></i></a>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</form>\n\t\t\t\t\t\t<form class="navbar-form pull-right">\n\t\t\t\t\t\t\t<div class="btn-group">\n\t\t\t\t\t\t\t\t<a ng-click="clearSignature()" class="btn btn-danger"><i class="fa fa-trash"></i></a>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</form>\n\t\t\t\t\t</div>\n\t\t\t\t</nav>\n\t\t\t\t<div class="scribble-area" style="width: {{width}}px; height: {{height}}px">\n\t\t\t\t\t<canvas class="scribble-board" height="{{height}}" width="{{width}}"></canvas>\n\t\t\t\t\t<video class="scribble-video" ng-show="mode==\'streaming\'" height="{{height}}" width="{{width}}" autoplay></video>\n\t\t\t\t\t<canvas class="scribble-background" ng-show="mode!=\'streaming\'" height="{{height}}" width="{{width}}"></canvas>\n\t\t\t\t\t<a ng-if="signatureReady" ng-click="submit()" class="btn btn-success btn-circular btn-fab"><i class="fa fa-fw fa-check fa-2x"></i></a>\n\t\t\t\t</div>\n\t\t\t\t<canvas class="scribble-composed" height="{{height}}" width="{{width}}"></canvas>\n\t\t\t</div>\n\t\t',
 		controller: ["$scope", "$element", "$debounce", function controller($scope, $element, $debounce) {
 			// Mobile version {{{
 			var userAgent = navigator.userAgent;
@@ -43,7 +43,7 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 			// }}}
 
 			// Deal with user config {{{
-			if (!$scope.height) $scope.height = 400;
+			if (!$scope.height) $scope.height = 200;
 			if (!$scope.width) $scope.width = 400;
 
 			$scope.buttons = Object.assign({ // Set default buttons unless overriden
@@ -91,7 +91,6 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 				videoStream.getTracks()[0].stop();
 			};
 			// }}}
-
 
 			// Handle signature pad events {{{
 			$scope.clearSignature = function () {
@@ -161,16 +160,28 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 			// }}}
 
 			// Submit signature {{{
-			$scope.getSignatureImage = function () {
+			$scope.getDataURI = function () {
 				ctxComposed.clearRect(0, 0, composedImage.width, composedImage.height);
 				ctxComposed.drawImage(canvasBackground, 0, 0);
 				ctxComposed.drawImage(canvas, 0, 0);
 				return composedImage.toDataURL();
 			};
 
+			$scope.getBlob = function (dataURI) {
+				var byteString = atob(dataURI.replace(/^data:image\/png;base64,/, ''));
+				var ia = new Uint8Array(byteString.length);
+				for (var i = 0; i < byteString.length; i++) {
+					ia[i] = byteString.charCodeAt(i);
+				}
+				return new Blob([ia], { type: 'image/png' });
+			};
+
 			$scope.submit = function () {
-				var image = $scope.getSignatureImage();
-				$scope.callback({ image: image });
+				var dataURI = $scope.getDataURI();
+				$scope.callback({
+					dataURI: dataURI,
+					blob: $scope.getBlob(dataURI)
+				});
 			};
 			// }}}
 		}]

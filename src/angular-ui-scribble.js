@@ -37,16 +37,22 @@ angular.module('angular-ui-scribble',[])
 				<input class="scribble-file-camera selectBackground" type="file" accept="image/*" capture="camera">
 				<nav ng-if="editable" class="scribble-actions navbar navbar-default" style="width: {{width}}px">
 					<div class="container-fluid">
-						<ul class="nav navbar-nav">
-							<li><a ng-click="clearSignature()" class="btn btn-danger"><i class="fa fa-trash"></i></a></li>
-							<li ng-if="mode!='erase'"><a ng-click="setMode('erase')" tooltip="Eraser" class="btn btn-default"><i class="fa fa-eraser"></i></a></li>
-							<li ng-if="mode=='erase'"><a ng-click="setMode('pen')" tooltip="Pen" class="btn btn-default"><i class="fa fa-pencil"></i></a></li>
-							<li ng-if="buttons.camera && mode!='streaming' && !isMobile" tooltip="Set background image"><a ng-click="setBackground()" class="btn btn-default"><i class="fa fa-image"></i></a></li>
-							<li ng-if="buttons.camera && mode=='streaming' && !isMobile" tooltip="Take screenshot"><a ng-click="screenshot()" class="btn btn-default"><i class="fa fa-camera"></i></a></li>
-							<li ng-show="buttons.camera && isMobile">
-								<a ng-click="requestCamera()" class="btn btn-default"><i class="fa fa-camera"></i></a>
-							</li>
-						</ul>
+						<form class="navbar-form pull-left">
+							<div class="btn-group">
+								<a ng-if="buttons.camera && mode!='streaming' && !isMobile" tooltip="Set background image" ng-click="setBackground()" class="btn btn-primary"><i class="fa fa-image"></i></a>
+								<a ng-if="buttons.camera && mode=='streaming' && !isMobile" tooltip="Take screenshot" ng-click="screenshot()" class="btn btn-primary"><i class="fa fa-camera"></i></a>
+								<a ng-if="buttons.camera && isMobile" ng-click="requestCamera()" class="btn btn-primary"><i class="fa fa-camera"></i></a>
+							</div>
+							<div class="btn-group">
+								<a ng-click="setMode('pen')" ng-class="mode=='pen' && 'active'" tooltip="Pen" class="btn btn-default"><i class="fa fa-pencil"></i></a>
+								<a ng-click="setMode('erase')" ng-class="mode=='erase' && 'active'" tooltip="Eraser" class="btn btn-default"><i class="fa fa-eraser"></i></a>
+							</div>
+						</form>
+						<form class="navbar-form pull-right">
+							<div class="btn-group">
+								<a ng-click="clearSignature()" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+							</div>
+						</form>
 					</div>
 				</nav>
 				<div class="scribble-area" style="width: {{width}}px; height: {{height}}px">
@@ -113,7 +119,6 @@ angular.module('angular-ui-scribble',[])
 				videoStream.getTracks()[0].stop();
 			};
 			// }}}
-
 
 			// Handle signature pad events {{{
 			$scope.clearSignature = ()=> $scope.signaturePad.clear();
