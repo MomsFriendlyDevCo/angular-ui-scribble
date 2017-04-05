@@ -30,9 +30,11 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 			editable: '<',
 			buttons: '<',
 			width: '@?',
-			height: '@?'
+			height: '@?',
+			sizes: '<',
+			colors: '<'
 		},
-		template: '\n\t\t\t<div class="scribble" ng-class="editable ? \'scribble-editable\' : \'scribble-not-editable\'">\n\t\t\t\t<input class="scribble-file-camera selectBackground" type="file" accept="image/*" capture="camera">\n\t\t\t\t<nav ng-if="editable" class="scribble-actions navbar navbar-default" style="width: {{width}}px">\n\t\t\t\t\t<div class="container-fluid">\n\t\t\t\t\t\t<form class="navbar-form pull-left">\n\t\t\t\t\t\t\t<div class="btn-group">\n\t\t\t\t\t\t\t\t<a ng-if="buttons.camera && mode!=\'streaming\' && !isMobile" tooltip="Set background image" ng-click="setBackground()" class="btn btn-primary"><i class="fa fa-image"></i></a>\n\t\t\t\t\t\t\t\t<a ng-if="buttons.camera && mode==\'streaming\' && !isMobile" tooltip="Take screenshot" ng-click="screenshot()" class="btn btn-primary"><i class="fa fa-camera"></i></a>\n\t\t\t\t\t\t\t\t<a ng-if="buttons.camera && isMobile" ng-click="requestCamera()" class="btn btn-primary"><i class="fa fa-camera"></i></a>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div class="btn-group">\n\t\t\t\t\t\t\t\t<a ng-click="setMode(\'pen\')" ng-class="mode==\'pen\' && \'active\'" tooltip="Pen" class="btn btn-default"><i class="fa fa-pencil"></i></a>\n\t\t\t\t\t\t\t\t<a ng-click="setMode(\'erase\')" ng-class="mode==\'erase\' && \'active\'" tooltip="Eraser" class="btn btn-default"><i class="fa fa-eraser"></i></a>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</form>\n\t\t\t\t\t\t<form class="navbar-form pull-right">\n\t\t\t\t\t\t\t<div class="btn-group">\n\t\t\t\t\t\t\t\t<a ng-click="clearSignature()" class="btn btn-danger"><i class="fa fa-trash"></i></a>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</form>\n\t\t\t\t\t</div>\n\t\t\t\t</nav>\n\t\t\t\t<div class="scribble-area" style="width: {{width}}px; height: {{height}}px">\n\t\t\t\t\t<canvas class="scribble-board" height="{{height}}" width="{{width}}"></canvas>\n\t\t\t\t\t<video class="scribble-video" ng-show="mode==\'streaming\'" height="{{height}}" width="{{width}}" autoplay></video>\n\t\t\t\t\t<canvas class="scribble-background" ng-show="mode!=\'streaming\'" height="{{height}}" width="{{width}}"></canvas>\n\t\t\t\t\t<a ng-if="signatureReady" ng-click="submit()" class="btn btn-success btn-circular btn-fab"><i class="fa fa-fw fa-check fa-2x"></i></a>\n\t\t\t\t</div>\n\t\t\t\t<canvas class="scribble-composed" height="{{height}}" width="{{width}}"></canvas>\n\t\t\t</div>\n\t\t',
+		template: '\n\t\t\t<div class="scribble" ng-class="editable ? \'scribble-editable\' : \'scribble-not-editable\'">\n\t\t\t\t<input class="scribble-file-camera selectBackground" type="file" accept="image/*" capture="camera">\n\t\t\t\t<nav ng-if="editable" class="scribble-actions navbar navbar-default" style="width: {{width}}px">\n\t\t\t\t\t<div class="navbar-form pull-left">\n\t\t\t\t\t\t<div ng-if="buttons.camera" class="btn-group">\n\t\t\t\t\t\t\t<a ng-if="mode!=\'streaming\' && !isMobile" tooltip="Set background image" ng-click="setBackground()" class="btn btn-primary"><i class="fa fa-image"></i></a>\n\t\t\t\t\t\t\t<a ng-if="mode==\'streaming\' && !isMobile" tooltip="Take screenshot" ng-click="screenshot()" class="btn btn-primary"><i class="fa fa-camera"></i></a>\n\t\t\t\t\t\t\t<a ng-if="isMobile" ng-click="requestCamera()" class="btn btn-primary"><i class="fa fa-camera"></i></a>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t<div class="btn-group">\n\t\t\t\t\t\t\t<a ng-click="setMode(\'pen\')" ng-class="mode==\'pen\' && \'active\'" tooltip="Pen" class="btn btn-default"><i class="fa fa-pencil"></i></a>\n\t\t\t\t\t\t\t<a ng-if="buttons.eraser" ng-click="setMode(\'erase\')" ng-class="mode==\'erase\' && \'active\'" tooltip="Eraser" class="btn btn-default"><i class="fa fa-eraser"></i></a>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t<div ng-if="buttons.sizes" class="btn-group scribble-pens">\n\t\t\t\t\t\t\t<a ng-repeat="size in sizes" ng-click="setPenSize(size)" ng-class="penSize==size && \'active\'" tooltip="Pen Size {{size}}" class="btn btn-default"><i class="fa fa-circle" style="transform: scale({{$index / sizes.length + 0.2}})"></i></a>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t<div ng-if="buttons.colors" class="btn-group scribble-colors">\n\t\t\t\t\t\t\t<a ng-repeat="color in colors" ng-click="setPenColor(color)" ng-class="penColor==color && \'active\'" tooltip="Pen Color {{color}}" class="btn btn-default"><i class="fa fa-square" style="color: {{color}}"></i></a>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div ng-if="buttons.clear" class="navbar-form pull-right">\n\t\t\t\t\t\t<div class="btn-group">\n\t\t\t\t\t\t\t<a ng-click="clearSignature()" class="btn btn-danger"><i class="fa fa-trash"></i></a>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t</nav>\n\t\t\t\t<div class="scribble-area" style="width: {{width}}px; height: {{height}}px">\n\t\t\t\t\t<canvas class="scribble-board" height="{{height}}" width="{{width}}"></canvas>\n\t\t\t\t\t<video class="scribble-video" ng-show="mode==\'streaming\'" height="{{height}}" width="{{width}}" autoplay></video>\n\t\t\t\t\t<canvas class="scribble-background" ng-show="mode!=\'streaming\'" height="{{height}}" width="{{width}}"></canvas>\n\t\t\t\t\t<a ng-if="signatureReady" ng-click="submit()" class="btn btn-success btn-circular btn-fab"><i class="fa fa-fw fa-check fa-2x"></i></a>\n\t\t\t\t</div>\n\t\t\t\t<canvas class="scribble-composed" height="{{height}}" width="{{width}}"></canvas>\n\t\t\t</div>\n\t\t',
 		controller: ["$scope", "$element", "$debounce", function controller($scope, $element, $debounce) {
 			// Mobile version {{{
 			var userAgent = navigator.userAgent;
@@ -44,12 +46,16 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 
 			// Deal with user config {{{
 			if (!$scope.height) $scope.height = 200;
-			if (!$scope.width) $scope.width = 400;
+			if (!$scope.width) $scope.width = 490;
+			if (!$scope.sizes) $scope.sizes = [1, 2, 3, 4, 5];
+			if (!$scope.colors) $scope.colors = ['#000', '#337AB7', '#3C763D', '#8A6D3B', '#A94442'];
 
 			$scope.buttons = Object.assign({ // Set default buttons unless overriden
 				camera: true,
+				colors: true,
 				clear: true,
-				eraser: true
+				eraser: true,
+				sizes: true
 			}, $scope.buttons);
 			// }}}
 
@@ -138,6 +144,23 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 					$scope.signaturePad.maxWidth = $scope.oldStroke.maxWidth;
 				}
 			});
+			// }}}
+
+			// Pen size {{{
+			$scope.penSize = 1;
+			$scope.setPenSize = function (size) {
+				$scope.penSize = size;
+				$scope.signaturePad.minWidth = size - 0.5;
+				$scope.signaturePad.maxWidth = size + 1.5;
+			};
+			// }}}
+
+			// Pen color {{{
+			$scope.penColor = '#000';
+			$scope.setPenColor = function (color) {
+				$scope.penColor = color;
+				$scope.signaturePad.penColor = color;
+			};
 			// }}}
 
 			// Background - mobile {{{

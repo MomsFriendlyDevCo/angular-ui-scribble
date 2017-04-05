@@ -31,28 +31,34 @@ angular.module('angular-ui-scribble',[])
 			buttons:'<',
 			width: '@?',
 			height: '@?',
+			sizes: '<',
+			colors: '<',
 		},
 		template: `
 			<div class="scribble" ng-class="editable ? 'scribble-editable' : 'scribble-not-editable'">
 				<input class="scribble-file-camera selectBackground" type="file" accept="image/*" capture="camera">
 				<nav ng-if="editable" class="scribble-actions navbar navbar-default" style="width: {{width}}px">
-					<div class="container-fluid">
-						<form class="navbar-form pull-left">
-							<div ng-if="buttons.camera" class="btn-group">
-								<a ng-if="mode!='streaming' && !isMobile" tooltip="Set background image" ng-click="setBackground()" class="btn btn-primary"><i class="fa fa-image"></i></a>
-								<a ng-if="mode=='streaming' && !isMobile" tooltip="Take screenshot" ng-click="screenshot()" class="btn btn-primary"><i class="fa fa-camera"></i></a>
-								<a ng-if="isMobile" ng-click="requestCamera()" class="btn btn-primary"><i class="fa fa-camera"></i></a>
-							</div>
-							<div class="btn-group">
-								<a ng-click="setMode('pen')" ng-class="mode=='pen' && 'active'" tooltip="Pen" class="btn btn-default"><i class="fa fa-pencil"></i></a>
-								<a ng-if="buttons.eraser" ng-click="setMode('erase')" ng-class="mode=='erase' && 'active'" tooltip="Eraser" class="btn btn-default"><i class="fa fa-eraser"></i></a>
-							</div>
-						</form>
-						<form ng-if="buttons.clear" class="navbar-form pull-right">
-							<div class="btn-group">
-								<a ng-click="clearSignature()" class="btn btn-danger"><i class="fa fa-trash"></i></a>
-							</div>
-						</form>
+					<div class="navbar-form pull-left">
+						<div ng-if="buttons.camera" class="btn-group">
+							<a ng-if="mode!='streaming' && !isMobile" tooltip="Set background image" ng-click="setBackground()" class="btn btn-primary"><i class="fa fa-image"></i></a>
+							<a ng-if="mode=='streaming' && !isMobile" tooltip="Take screenshot" ng-click="screenshot()" class="btn btn-primary"><i class="fa fa-camera"></i></a>
+							<a ng-if="isMobile" ng-click="requestCamera()" class="btn btn-primary"><i class="fa fa-camera"></i></a>
+						</div>
+						<div class="btn-group">
+							<a ng-click="setMode('pen')" ng-class="mode=='pen' && 'active'" tooltip="Pen" class="btn btn-default"><i class="fa fa-pencil"></i></a>
+							<a ng-if="buttons.eraser" ng-click="setMode('erase')" ng-class="mode=='erase' && 'active'" tooltip="Eraser" class="btn btn-default"><i class="fa fa-eraser"></i></a>
+						</div>
+						<div ng-if="buttons.sizes" class="btn-group scribble-pens">
+							<a ng-repeat="size in sizes" ng-click="setPenSize(size)" ng-class="penSize==size && 'active'" tooltip="Pen Size {{size}}" class="btn btn-default"><i class="fa fa-circle" style="transform: scale({{$index / sizes.length + 0.2}})"></i></a>
+						</div>
+						<div ng-if="buttons.colors" class="btn-group scribble-colors">
+							<a ng-repeat="color in colors" ng-click="setPenColor(color)" ng-class="penColor==color && 'active'" tooltip="Pen Color {{color}}" class="btn btn-default"><i class="fa fa-square" style="color: {{color}}"></i></a>
+						</div>
+					</div>
+					<div ng-if="buttons.clear" class="navbar-form pull-right">
+						<div class="btn-group">
+							<a ng-click="clearSignature()" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+						</div>
 					</div>
 				</nav>
 				<div class="scribble-area" style="width: {{width}}px; height: {{height}}px">
@@ -73,12 +79,16 @@ angular.module('angular-ui-scribble',[])
 
 			// Deal with user config {{{
 			if (!$scope.height) $scope.height = 200;
-			if (!$scope.width) $scope.width = 400;
+			if (!$scope.width) $scope.width = 490;
+			if (!$scope.sizes) $scope.sizes = [1, 2, 3, 4, 5];
+			if (!$scope.colors) $scope.colors = ['#000', '#337AB7', '#3C763D', '#8A6D3B', '#A94442'];
 
 			$scope.buttons = Object.assign({ // Set default buttons unless overriden
 				camera: true,
+				colors: true,
 				clear: true,
 				eraser: true,
+				sizes: true,
 			}, $scope.buttons);
 			// }}}
 
@@ -156,6 +166,23 @@ angular.module('angular-ui-scribble',[])
 					$scope.signaturePad.maxWidth = $scope.oldStroke.maxWidth;
 				}
 			});
+			// }}}
+
+			// Pen size {{{
+			$scope.penSize = 1;
+			$scope.setPenSize = size => {
+				$scope.penSize = size;
+				$scope.signaturePad.minWidth = size - 0.5;
+				$scope.signaturePad.maxWidth = size + 1.5;
+			};
+			// }}}
+
+			// Pen color {{{
+			$scope.penColor = '#000';
+			$scope.setPenColor = color => {
+				$scope.penColor = color;
+				$scope.signaturePad.penColor = color;
+			};
 			// }}}
 
 			// Background - mobile {{{

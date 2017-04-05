@@ -1,6 +1,6 @@
 {
   "name": "@momsfriendlydevco/angular-ui-scribble",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Angular signature_pad wrapper",
   "main": "angular-ui-scribble.js",
   "scripts": {

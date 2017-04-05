@@ -53,3 +53,9 @@
 	display: none;
 }
 
+.scribble .scribble-pens > a,
+.scribble .scribble-colors > a
+{
+	padding-left: 6px;
+	padding-right: 6px;
+}

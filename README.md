@@ -53,9 +53,13 @@ The UI widget is a AngularJS directive which supports the following options:
 |------------------|------------|--------------------|----------------------------------------------------------------------------------------------------------------|
 | `callback`       | `function` | `none`             | The function to accept the completed drawing. The callback must contain either keyword `dataURI` or `blob` somewhere which will be replaced with the DataURI of the encoded image and the raw binary blob. e.g. `myCallback(dataURI)` to recieve the dataURI and `myCallback(blob)` to get the Blob object |
 | `editable`       | `boolean`  | `false`            | If false the first scribble the user makes will be used, if true the user has access to some editing tools before submission |
-| `buttons`        | `Object`   | `{}`               | Which buttons should be displayed in the UI                                                                    |
+| `colors`         | `array`    | *Pastel colors*    | An array of colors to select from                                                                              |
+| `sizes`          | `array`    | `[1,2,3,4,5]`      | An array of pen sizes to select from                                                                           |
+| `buttons`        | `Object`   | `{}`               | Which buttons should be displayed in the UI. See below for each individual option                              |
 | `buttons.camera` | `boolean`  | `true`             | Display the camera capture button if the platform supports it                                                  |
+| `buttons.colors` | `boolean`  | `true`             | Display the color selection buttons                                                                            |
 | `buttons.clear`  | `boolean`  | `true`             | Display the clear input button                                                                                 |
 | `buttons.eraser` | `boolean`  | `true`             | Display the eraser tool                                                                                        |
+| `buttons.sizes`  | `boolean`  | `true`             | Display the pen size selection buttons                                                                         |
 | `width`          | `number`   | `400`              | The width of the widget                                                                                        |
 | `height`         | `number`   | `200`              | The height of the widget                                                                                       |
