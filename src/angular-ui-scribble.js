@@ -173,16 +173,28 @@ angular.module('angular-ui-scribble',[])
 			// }}}
 
 			// Submit signature {{{
-			$scope.getSignatureImage = function(){
+			$scope.getDataURI = ()=> {
 				ctxComposed.clearRect(0, 0, composedImage.width, composedImage.height);
 				ctxComposed.drawImage(canvasBackground, 0, 0);
 				ctxComposed.drawImage(canvas, 0, 0);
 				return composedImage.toDataURL();
 			};
 
+			$scope.getBlob = dataURI => {
+				var byteString = atob(dataURI.replace(/^data:image\/png;base64,/,''));
+				var ia = new Uint8Array(byteString.length);
+				for (var i = 0; i < byteString.length; i++) {
+					ia[i] = byteString.charCodeAt(i);
+				}
+				return new Blob([ia], {type: 'image/png'});
+			};
+
 			$scope.submit = ()=> {
-				var image = $scope.getSignatureImage();
-				$scope.callback({image});
+				var dataURI = $scope.getDataURI();
+				$scope.callback({
+					dataURI,
+					blob: $scope.getBlob(dataURI),
+				});
 			};
 			// }}}
 		}

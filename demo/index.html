@@ -33,12 +33,12 @@
 		<div ng-controller="scribbleExampleCtrl">
 
 			<h2>Scribble - Simple signature</h2>
-			<pre><code class="html">Process signature immediately: &lt;ui-scribble callback="callback(image)"&gt;&lt;/ui-scribble&gt;</code></pre>
-			<ui-scribble width="700" height="100" callback="callback(image)"></ui-scribble>
+			<pre><code class="html">Process signature immediately: &lt;ui-scribble callback="callback(dataURI)"&gt;&lt;/ui-scribble&gt;</code></pre>
+			<ui-scribble width="700" height="100" callback="callback(dataURI)"></ui-scribble>
 
 			<h2>Scribble - Editable drawing pad</h2>
-			<pre><code class="html">Enable editing: &lt;ui-scribble callback="callback(image)" editable="true"&gt;&lt;/ui-scribble&gt;</code></pre>
-			<ui-scribble callback="callback(image)" editable="true"></ui-scribble>
+			<pre><code class="html">Enable editing: &lt;ui-scribble callback="callback(dataURI)" editable="true"&gt;&lt;/ui-scribble&gt;</code></pre>
+			<ui-scribble callback="callback(dataURI)" editable="true"></ui-scribble>
 
 		</div>
 	</body>

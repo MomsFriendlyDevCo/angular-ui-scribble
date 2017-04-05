@@ -51,7 +51,7 @@ The UI widget is a AngularJS directive which supports the following options:
 
 | Option     | Type       | Default            | Description                                                                                                    |
 |------------|------------|--------------------|----------------------------------------------------------------------------------------------------------------|
-| `callback` | `function` | `none`             | The function to accept the completed drawing. The callback must contain the keyword `image` somewhere which will be replaced with the Base64 of the encoded image. e.g. `myCallback(image)` |
+| `callback` | `function` | `none`             | The function to accept the completed drawing. The callback must contain either keyword `dataURI` or `blob` somewhere which will be replaced with the DataURI of the encoded image and the raw binary blob. e.g. `myCallback(dataURI)` to recieve the dataURI and `myCallback(blob)` to get the Blob object |
 | `editable` | `boolean`  | `false`            | If false the first scribble the user makes will be used, if true the user has access to some editing tools before submission |
 | `buttons`  | `Object`   | `{}`               | Which buttons should be displayed in the UI                                                                    |
 | `width`    | `number`   | `400`              | The width of the widget                                                                                        |
