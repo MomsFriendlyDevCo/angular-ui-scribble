@@ -38,17 +38,17 @@ angular.module('angular-ui-scribble',[])
 				<nav ng-if="editable" class="scribble-actions navbar navbar-default" style="width: {{width}}px">
 					<div class="container-fluid">
 						<form class="navbar-form pull-left">
-							<div class="btn-group">
-								<a ng-if="buttons.camera && mode!='streaming' && !isMobile" tooltip="Set background image" ng-click="setBackground()" class="btn btn-primary"><i class="fa fa-image"></i></a>
-								<a ng-if="buttons.camera && mode=='streaming' && !isMobile" tooltip="Take screenshot" ng-click="screenshot()" class="btn btn-primary"><i class="fa fa-camera"></i></a>
-								<a ng-if="buttons.camera && isMobile" ng-click="requestCamera()" class="btn btn-primary"><i class="fa fa-camera"></i></a>
+							<div ng-if="buttons.camera" class="btn-group">
+								<a ng-if="mode!='streaming' && !isMobile" tooltip="Set background image" ng-click="setBackground()" class="btn btn-primary"><i class="fa fa-image"></i></a>
+								<a ng-if="mode=='streaming' && !isMobile" tooltip="Take screenshot" ng-click="screenshot()" class="btn btn-primary"><i class="fa fa-camera"></i></a>
+								<a ng-if="isMobile" ng-click="requestCamera()" class="btn btn-primary"><i class="fa fa-camera"></i></a>
 							</div>
 							<div class="btn-group">
 								<a ng-click="setMode('pen')" ng-class="mode=='pen' && 'active'" tooltip="Pen" class="btn btn-default"><i class="fa fa-pencil"></i></a>
-								<a ng-click="setMode('erase')" ng-class="mode=='erase' && 'active'" tooltip="Eraser" class="btn btn-default"><i class="fa fa-eraser"></i></a>
+								<a ng-if="buttons.eraser" ng-click="setMode('erase')" ng-class="mode=='erase' && 'active'" tooltip="Eraser" class="btn btn-default"><i class="fa fa-eraser"></i></a>
 							</div>
 						</form>
-						<form class="navbar-form pull-right">
+						<form ng-if="buttons.clear" class="navbar-form pull-right">
 							<div class="btn-group">
 								<a ng-click="clearSignature()" class="btn btn-danger"><i class="fa fa-trash"></i></a>
 							</div>
@@ -77,6 +77,8 @@ angular.module('angular-ui-scribble',[])
 
 			$scope.buttons = Object.assign({ // Set default buttons unless overriden
 				camera: true,
+				clear: true,
+				eraser: true,
 			}, $scope.buttons);
 			// }}}
 

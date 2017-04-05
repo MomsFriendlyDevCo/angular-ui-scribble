@@ -47,7 +47,9 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 			if (!$scope.width) $scope.width = 400;
 
 			$scope.buttons = Object.assign({ // Set default buttons unless overriden
-				camera: true
+				camera: true,
+				clear: true,
+				eraser: true
 			}, $scope.buttons);
 			// }}}
 
