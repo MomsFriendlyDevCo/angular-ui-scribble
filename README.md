@@ -55,4 +55,4 @@ The UI widget is a AngularJS directive which supports the following options:
 | `editable` | `boolean`  | `false`            | If false the first scribble the user makes will be used, if true the user has access to some editing tools before submission |
 | `buttons`  | `Object`   | `{}`               | Which buttons should be displayed in the UI                                                                    |
 | `width`    | `number`   | `400`              | The width of the widget                                                                                        |
-| `height`   | `number`   | `400`              | The height of the widget                                                                                       |
+| `height`   | `number`   | `200`              | The height of the widget                                                                                       |

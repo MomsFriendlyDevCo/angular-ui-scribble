@@ -66,7 +66,7 @@ angular.module('angular-ui-scribble',[])
 			// }}}
 
 			// Deal with user config {{{
-			if (!$scope.height) $scope.height = 400;
+			if (!$scope.height) $scope.height = 200;
 			if (!$scope.width) $scope.width = 400;
 
 			$scope.buttons = Object.assign({ // Set default buttons unless overriden
