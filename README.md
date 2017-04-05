@@ -9,6 +9,9 @@ Can be used for:
 * Simple scribbles
 
 
+[Demo](https://momsfriendlydevco.github.io/angular-ui-scribble).
+
+
 Installation
 ------------
 NOTE: This module requires [signature_pad](https://github.com/szimek/signature_pad)

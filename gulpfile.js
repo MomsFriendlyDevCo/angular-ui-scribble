@@ -78,17 +78,16 @@ gulp.task('gh-pages', ['build'], function() {
 		'./demo/_config.yml',
 		'./demo/app.js',
 		'./demo/index.html',
+		'./demo/style.css',
 		'./dist/**/*',
 		'./node_modules/angular/angular.min.js',
-		'./node_modules/@momsfriendlydevco/angular-bs-tooltip/dist/angular-bs-tooltip.min.js',
 		'./node_modules/bootstrap/dist/css/bootstrap.min.css',
 		'./node_modules/bootstrap/dist/js/bootstrap.min.js',
 		'./node_modules/font-awesome/css/font-awesome.min.css',
 		'./node_modules/font-awesome/fonts/fontawesome-webfont.ttf',
 		'./node_modules/font-awesome/fonts/fontawesome-webfont.woff',
 		'./node_modules/font-awesome/fonts/fontawesome-webfont.woff2',
-		'./node_modules/jquery/dist/jquery.min.js',
-		'./node_modules/tether/dist/js/tether.min.js',
+		'./node_modules/signature_pad/dist/signature_pad.min.js',
 	], {base: __dirname})
 		.pipe(rename(function(path) {
 			if (path.dirname == 'demo') { // Move all demo files into root
