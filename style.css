@@ -1,0 +1,10 @@
+/* Demo css*/
+* {
+	font-family: verdana, arial,sans-serif;
+}
+pre {
+	width: 70%;
+}
+.scribble-canvas canvas {
+	border: 1px solid #f4f4f4;
+}
