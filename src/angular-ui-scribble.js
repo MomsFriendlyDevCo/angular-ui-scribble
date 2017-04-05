@@ -31,8 +31,9 @@ angular.module('angular-ui-scribble',[])
 			buttons:'<',
 		},
 		template: `
-			<div class="scribble">
-				<nav class="scribble-actions navbar navbar-default" style="width: {{width}}px">
+			<div class="scribble" ng-class="editable ? 'scribble-editable' : 'scribble-not-editable'">
+				<input class="scribble-file-camera selectBackground" type="file" accept="image/*" capture="camera">
+				<nav ng-if="editable" class="scribble-actions navbar navbar-default" style="width: {{width}}px">
 					<div class="container-fluid">
 						<ul class="nav navbar-nav">
 							<li><a ng-click="clearSignature()" class="btn btn-danger"><i class="fa fa-trash"></i></a></li>
@@ -41,7 +42,6 @@ angular.module('angular-ui-scribble',[])
 							<li ng-if="buttons.camera && mode!='streaming' && !isMobile" tooltip="Set background image"><a ng-click="setBackground()" class="btn btn-default"><i class="fa fa-image"></i></a></li>
 							<li ng-if="buttons.camera && mode=='streaming' && !isMobile" tooltip="Take screenshot"><a ng-click="screenshot()" class="btn btn-default"><i class="fa fa-camera"></i></a></li>
 							<li ng-show="buttons.camera && isMobile">
-								<input class="scrible-file-camera selectBackground" type="file" accept="image/*" capture="camera">
 								<a ng-click="requestCamera()" class="btn btn-default"><i class="fa fa-camera"></i></a>
 							</li>
 						</ul>
