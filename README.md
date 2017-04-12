@@ -8,6 +8,8 @@ Can be used for:
 * Annotated drawings
 * Simple scribbles
 
+[Demo](https://momsfriendlydevco.github.io/angular-ui-scribble)
+
 
 Installation
 ------------
