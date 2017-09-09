@@ -1,17 +1,18 @@
 var _ = require('lodash');
-var annotate = require('gulp-ng-annotate');
 var babel = require('gulp-babel');
 var cleanCSS = require('gulp-clean-css');
 var ghPages = require('gulp-gh-pages');
 var gulp = require('gulp');
-var rename = require('gulp-rename');
+var gutil = require('gulp-util');
 var nodemon = require('gulp-nodemon');
-var uglify = require('gulp-uglify');
+var plumber = require('gulp-plumber');
+var rename = require('gulp-rename');
 var rimraf = require('rimraf');
+var uglify = require('gulp-uglify');
 var watch = require('gulp-watch');
 
-gulp.task('default', ['build']);
-gulp.task('build', ['js', 'js:min', 'css', 'css:min']);
+gulp.task('default', ['serve']);
+gulp.task('build', ['js', 'css']);
 
 
 gulp.task('serve', ['build'], function() {
@@ -39,36 +40,34 @@ gulp.task('serve', ['build'], function() {
 });
 
 
-gulp.task('js', ()=> {
+gulp.task('js', ()=>
 	gulp.src('./src/angular-ui-scribble.js')
+		.pipe(plumber({
+			errorHandler: function(err) {
+				gutil.log(gutil.colors.red('ERROR DURING JS BUILD'));
+				process.stdout.write(err.stack);
+				this.emit('end');
+			},
+		}))
 		.pipe(rename('angular-ui-scribble.js'))
-		.pipe(babel({presets: ['es2015']}))
-		.pipe(annotate())
-		.pipe(gulp.dest('./dist'));
-});
-
-gulp.task('js:min', ()=> {
-	gulp.src('./src/angular-ui-scribble.js')
+		.pipe(babel({
+			presets: ['es2015'],
+			plugins: ['angularjs-annotate'],
+		}))
+		.pipe(gulp.dest('./dist'))
+		.pipe(uglify())
 		.pipe(rename('angular-ui-scribble.min.js'))
-		.pipe(babel({presets: ['es2015']}))
-		.pipe(annotate())
-		.pipe(uglify({mangle: false}))
-		.pipe(gulp.dest('./dist'));
-});
+		.pipe(gulp.dest('./dist'))
+);
 
 gulp.task('css', ()=>
 	gulp.src('./src/angular-ui-scribble.css')
 		.pipe(rename('angular-ui-scribble.css'))
 		.pipe(gulp.dest('./dist'))
-);
-
-gulp.task('css:min', ()=>
-	gulp.src('./src/angular-ui-scribble.css')
 		.pipe(rename('angular-ui-scribble.min.css'))
 		.pipe(cleanCSS())
 		.pipe(gulp.dest('./dist'))
 );
-
 
 gulp.task('gh-pages', ['build'], function() {
 	rimraf.sync('./gh-pages');
@@ -98,6 +97,5 @@ gulp.task('gh-pages', ['build'], function() {
 		.pipe(ghPages({
 			cacheDir: 'gh-pages',
 			push: true, // Change to false for dryrun (files dumped to cacheDir)
-			// force: true, // Required to include node_modules files even though they are in .gitignore
 		}))
 });
