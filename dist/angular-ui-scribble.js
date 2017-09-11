@@ -41,6 +41,7 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 			$scope.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(userAgent);
 			$scope.requestCamera = function () {
 				$scope.setMode('pen');
+
 				if (videoStream && videoStream.getTracks()[0]) videoStream.getTracks()[0].stop();
 				$element.find('input[type=file]').trigger('click');
 			};
@@ -77,6 +78,7 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 
 			$scope.setBackground = function () {
 				$scope.setMode('streaming'); // Start video feed
+				$scope.signatureReady = false;
 				// Clear canvas
 				if (ctxBackground) ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -96,6 +98,8 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 
 			$scope.screenshot = function () {
 				$scope.setMode('pen');
+				$scope.signatureReady = false;
+
 				if (video.paused || video.ended) console.log("no video");;
 				if (video.paused || video.ended) return false;
 				//TODO: hack to flip context only once {{{
@@ -104,6 +108,7 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 
 				ctxBackground.drawImage(video, 0, 0, $scope.width, $scope.height);
 				videoStream.getTracks()[0].stop();
+				$scope.signatureReady = true;
 			};
 			// }}}
 
@@ -184,10 +189,13 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 
 					image.src = event.target.result;
 					image.onload = function () {
-						if ($scope.reversed) $scope.flipContext();
+						$scope.$applyAsync(function () {
+							if ($scope.reversed) $scope.flipContext();
+							$scope.signatureReady = true;
 
-						ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
-						ctxBackground.drawImage(image, 0, 0, canvasBackground.width, canvasBackground.height);
+							ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
+							ctxBackground.drawImage(image, 0, 0, canvasBackground.width, canvasBackground.height);
+						});
 					};
 				};
 
