@@ -34,13 +34,15 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 			sizes: '<',
 			colors: '<'
 		},
-		template: '\n\t\t\t<div class="scribble" ng-class="editable ? \'scribble-editable\' : \'scribble-not-editable\'">\n\t\t\t\t<input class="scribble-file-camera selectBackground" type="file" accept="image/*" capture="camera">\n\t\t\t\t<nav ng-if="editable" class="scribble-actions navbar navbar-default" style="width: {{width}}px">\n\t\t\t\t\t<div class="navbar-form pull-left">\n\t\t\t\t\t\t<div ng-if="buttons.camera" class="btn-group">\n\t\t\t\t\t\t\t<a ng-if="mode!=\'streaming\' && !isMobile" tooltip="Set background image" ng-click="setBackground()" class="btn btn-primary"><i class="fa fa-image"></i></a>\n\t\t\t\t\t\t\t<a ng-if="mode==\'streaming\' && !isMobile" tooltip="Take screenshot" ng-click="screenshot()" class="btn btn-primary"><i class="fa fa-camera"></i></a>\n\t\t\t\t\t\t\t<a ng-if="isMobile" ng-click="requestCamera()" class="btn btn-primary"><i class="fa fa-camera"></i></a>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t<div class="btn-group">\n\t\t\t\t\t\t\t<a ng-click="setMode(\'pen\')" ng-class="mode==\'pen\' && \'active\'" tooltip="Pen" class="btn btn-default"><i class="fa fa-pencil"></i></a>\n\t\t\t\t\t\t\t<a ng-if="buttons.eraser" ng-click="setMode(\'erase\')" ng-class="mode==\'erase\' && \'active\'" tooltip="Eraser" class="btn btn-default"><i class="fa fa-eraser"></i></a>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t<div ng-if="buttons.sizes" class="btn-group scribble-pens">\n\t\t\t\t\t\t\t<a ng-repeat="size in sizes" ng-click="setPenSize(size)" ng-class="penSize==size && \'active\'" tooltip="Pen Size {{size}}" class="btn btn-default"><i class="fa fa-circle" style="transform: scale({{$index / sizes.length + 0.2}})"></i></a>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t<div ng-if="buttons.colors" class="btn-group scribble-colors">\n\t\t\t\t\t\t\t<a ng-repeat="color in colors" ng-click="setPenColor(color)" ng-class="penColor==color && \'active\'" tooltip="Pen Color {{color}}" class="btn btn-default"><i class="fa fa-square" style="color: {{color}}"></i></a>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div ng-if="buttons.clear" class="navbar-form pull-right">\n\t\t\t\t\t\t<div class="btn-group">\n\t\t\t\t\t\t\t<a ng-click="clearSignature()" class="btn btn-danger"><i class="fa fa-trash"></i></a>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t</nav>\n\t\t\t\t<div class="scribble-area" style="width: {{width}}px; height: {{height}}px">\n\t\t\t\t\t<canvas class="scribble-board" height="{{height}}" width="{{width}}"></canvas>\n\t\t\t\t\t<video class="scribble-video" ng-show="mode==\'streaming\'" height="{{height}}" width="{{width}}" autoplay></video>\n\t\t\t\t\t<canvas class="scribble-background" ng-show="mode!=\'streaming\'" height="{{height}}" width="{{width}}"></canvas>\n\t\t\t\t\t<a ng-if="signatureReady" ng-click="submit()" class="btn btn-success btn-circular btn-fab"><i class="fa fa-fw fa-check fa-2x"></i></a>\n\t\t\t\t</div>\n\t\t\t\t<canvas class="scribble-composed" height="{{height}}" width="{{width}}"></canvas>\n\t\t\t</div>\n\t\t',
+		template: '\n\t\t\t<div class="scribble" ng-class="editable ? \'scribble-editable\' : \'scribble-not-editable\'">\n\t\t\t\t<input class="scribble-file-camera selectBackground" type="file" accept="image/*" >\n\t\t\t\t<nav ng-if="editable" class="scribble-actions navbar navbar-default" style="width: {{width}}px">\n\t\t\t\t\t<div class="navbar-form pull-left">\n\t\t\t\t\t\t<div ng-if="buttons.camera" class="btn-group">\n\t\t\t\t\t\t\t<a ng-if="mode!=\'streaming\' && !isMobile" tooltip="Set background image" ng-click="setBackground()" class="btn btn-primary"><i class="fa fa-image"></i></a>\n\t\t\t\t\t\t\t<a ng-if="mode==\'streaming\' && !isMobile" tooltip="Take screenshot" ng-click="screenshot()" class="btn btn-primary"><i class="fa fa-camera"></i></a>\n\t\t\t\t\t\t\t<a ng-click="requestCamera()" class="btn btn-primary"><i class="fa fa-{{isMobile ? \'camera\' : \'paperclip\'}}"></i></a>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t<div class="btn-group">\n\t\t\t\t\t\t\t<a ng-click="setMode(\'pen\')" ng-class="mode==\'pen\' && \'active\'" tooltip="Pen" class="btn btn-default"><i class="fa fa-pencil"></i></a>\n\t\t\t\t\t\t\t<a ng-if="buttons.eraser" ng-click="setMode(\'erase\')" ng-class="mode==\'erase\' && \'active\'" tooltip="Eraser" class="btn btn-default"><i class="fa fa-eraser"></i></a>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t<div ng-if="buttons.sizes" class="btn-group scribble-pens">\n\t\t\t\t\t\t\t<a ng-repeat="size in sizes" ng-click="setPenSize(size)" ng-class="penSize==size && \'active\'" tooltip="Pen Size {{size}}" class="btn btn-default"><i class="fa fa-circle" style="transform: scale({{$index / sizes.length + 0.2}})"></i></a>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t<div ng-if="buttons.colors" class="btn-group scribble-colors">\n\t\t\t\t\t\t\t<a ng-repeat="color in colors" ng-click="setPenColor(color)" ng-class="penColor==color && \'active\'" tooltip="Pen Color {{color}}" class="btn btn-default"><i class="fa fa-square" style="color: {{color}}"></i></a>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div ng-if="buttons.clear" class="navbar-form pull-right">\n\t\t\t\t\t\t<div class="btn-group">\n\t\t\t\t\t\t\t<a ng-click="clearSignature()" class="btn btn-danger"><i class="fa fa-trash"></i></a>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t</nav>\n\t\t\t\t<div class="scribble-area" style="width: {{width}}px; height: {{height}}px">\n\t\t\t\t\t<canvas class="scribble-board" height="{{height}}" width="{{width}}"></canvas>\n\t\t\t\t\t<video class="scribble-video" ng-show="mode==\'streaming\'" height="{{height}}" width="{{width}}" autoplay></video>\n\t\t\t\t\t<canvas class="scribble-background" ng-show="mode!=\'streaming\'" height="{{height}}" width="{{width}}"></canvas>\n\t\t\t\t\t<a ng-if="signatureReady" ng-click="submit()" class="btn btn-success btn-circular btn-fab"><i class="fa fa-fw fa-check fa-2x"></i></a>\n\t\t\t\t</div>\n\t\t\t\t<canvas class="scribble-composed" height="{{height}}" width="{{width}}"></canvas>\n\t\t\t</div>\n\t\t',
 		controller: ["$scope", "$element", "$debounce", function controller($scope, $element, $debounce) {
 			// Mobile version {{{
 			var userAgent = navigator.userAgent;
 			$scope.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(userAgent);
 			$scope.requestCamera = function () {
-				return $element.find('input[type=file]').trigger('click');
+				$scope.setMode('pen');
+				if (videoStream && videoStream.getTracks()[0]) videoStream.getTracks()[0].stop();
+				$element.find('input[type=file]').trigger('click');
 			};
 			// }}}
 
@@ -75,6 +77,9 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 
 			$scope.setBackground = function () {
 				$scope.setMode('streaming'); // Start video feed
+				// Clear canvas
+				if (ctxBackground) ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
+
 				if (navigator.getUserMedia) navigator.getUserMedia({ video: true }, function (stream) {
 					// Get webcam feed if available
 					video.src = window.URL.createObjectURL(stream);
@@ -83,16 +88,18 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 			};
 
 			$scope.reversed = false;
+			$scope.flipContext = function () {
+				$scope.reversed = !$scope.reversed;
+				ctxBackground.translate(canvasBackground.width, 0);
+				ctxBackground.scale(-1, 1);
+			};
+
 			$scope.screenshot = function () {
 				$scope.setMode('pen');
 				if (video.paused || video.ended) console.log("no video");;
 				if (video.paused || video.ended) return false;
 				//TODO: hack to flip context only once {{{
-				if (!$scope.reversed) {
-					$scope.reversed = true;
-					ctxBackground.translate(canvasBackground.width, 0);
-					ctxBackground.scale(-1, 1);
-				}
+				if (!$scope.reversed) $scope.flipContext();
 				// }}}
 
 				ctxBackground.drawImage(video, 0, 0, $scope.width, $scope.height);
@@ -166,6 +173,8 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 			// Background - mobile {{{
 			var selectBackground = $element[0].querySelector('.selectBackground');
 			selectBackground.addEventListener('change', function (e) {
+				if (!selectBackground.files.length) return;
+
 				var backgroundSrc = selectBackground.files[0];
 				var reader = new FileReader();
 
@@ -175,12 +184,14 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 
 					image.src = event.target.result;
 					image.onload = function () {
+						if ($scope.reversed) $scope.flipContext();
+
 						ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
 						ctxBackground.drawImage(image, 0, 0, canvasBackground.width, canvasBackground.height);
 					};
 				};
 
-				reader.readAsDataURL(backgroundSrc);
+				if (reader) reader.readAsDataURL(backgroundSrc);
 			});
 			// }}}
 
