@@ -36,13 +36,15 @@ angular.module('angular-ui-scribble',[])
 		},
 		template: `
 			<div class="scribble" ng-class="editable ? 'scribble-editable' : 'scribble-not-editable'">
-				<input class="scribble-file-camera selectBackground" type="file" accept="image/*" >
+				<input class="scribble-file-camera selectBackground-image" type="file" accept="image/*" >
+				<input class="scribble-file-camera selectBackground-video" type="file" accept="image/*" capture="camera">
 				<nav ng-if="editable" class="scribble-actions navbar navbar-default" style="width: {{width}}px">
 					<div class="navbar-form pull-left">
 						<div ng-if="buttons.camera" class="btn-group">
 							<a ng-if="mode!='streaming' && !isMobile" tooltip="Set background image" ng-click="setBackground()" class="btn btn-primary"><i class="fa fa-image"></i></a>
 							<a ng-if="mode=='streaming' && !isMobile" tooltip="Take screenshot" ng-click="screenshot()" class="btn btn-primary"><i class="fa fa-camera"></i></a>
-							<a ng-click="requestCamera()" class="btn btn-primary"><i class="fa fa-{{isMobile ? 'camera' : 'paperclip'}}"></i></a>
+							<a ng-if="isMobile" ng-click="requestCamera('video')" class="btn btn-primary"><i class="fa fa-camera"></i></a>
+							<a ng-click="requestCamera('image')" class="btn btn-primary"><i class="fa fa-paperclip"></i></a>
 						</div>
 						<div class="btn-group">
 							<a ng-click="setMode('pen')" ng-class="mode=='pen' && 'active'" tooltip="Pen" class="btn btn-default"><i class="fa fa-pencil"></i></a>
@@ -74,12 +76,14 @@ angular.module('angular-ui-scribble',[])
 			// Mobile version {{{
 			var userAgent = navigator.userAgent;
 			$scope.isMobile = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(userAgent));
-			$scope.requestCamera = ()=> {
+
+			$scope.requestCamera = (type)=> {
 				$scope.setMode('pen');
 
 				if (videoStream && videoStream.getTracks()[0])
 					videoStream.getTracks()[0].stop();
-				$element.find('input[type=file]').trigger('click')
+
+				$element.find('.selectBackground-'+type).trigger('click')
 			};
 			// }}}
 
@@ -210,33 +214,40 @@ angular.module('angular-ui-scribble',[])
 			// }}}
 
 			// Background - mobile {{{
-			var selectBackground = $element[0].querySelector('.selectBackground')
-			selectBackground.addEventListener('change', function(e){
-				if (!selectBackground.files.length) return;
+			var selectBackgroundImage = $element[0].querySelector('.selectBackground-image');
+			var selectBackgroundVideo = $element[0].querySelector('.selectBackground-video');
+			
+			selectBackgroundImage.addEventListener('change', imageSelected(selectBackgroundImage));
+			selectBackgroundVideo.addEventListener('change', imageSelected(selectBackgroundVideo));
+			
+			function imageSelected (selectBackground) {
+				return function(){
+					if (!selectBackground.files.length) return;
 
-				var backgroundSrc = selectBackground.files[0];
-				var reader = new FileReader();
-
-				reader.onload = function(event){
-					var image = new Image();
-					var ratio = window.devicePixelRatio || 1;
-
-					image.src = event.target.result;
-					image.onload = function () {
-						$scope.$applyAsync(() => {
-							if ($scope.reversed)
-								$scope.flipContext()
-							$scope.signatureReady = true;
-	
-							ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
-							ctxBackground.drawImage(image, 0, 0, canvasBackground.width, canvasBackground.height);
-						});
+					var backgroundSrc = selectBackground.files[0];
+					var reader = new FileReader();
+					
+					reader.onload = function(event){
+						var image = new Image();
+						image.src = event.target.result;
+						image.onload = () => loadImage(image)
 					};
+					
+					if (reader)
+						reader.readAsDataURL(backgroundSrc);
 				};
-
-				if (reader)
-					reader.readAsDataURL(backgroundSrc);
-			});
+			}
+			// Load image on canvas
+			function loadImage(image) {
+				$scope.$applyAsync(() => {
+					if ($scope.reversed)
+						$scope.flipContext();
+					$scope.signatureReady = true;
+					
+					ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
+					ctxBackground.drawImage(image, 0, 0, canvasBackground.width, canvasBackground.height);
+				});
+			}
 			// }}}
 
 			// Submit signature {{{
