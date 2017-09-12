@@ -77,16 +77,21 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
 
 			$scope.setBackground = function () {
-				$scope.setMode('streaming'); // Start video feed
-				$scope.signatureReady = false;
-				// Clear canvas
-				if (ctxBackground) ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
+				if (!navigator.getUserMedia) return;
 
-				if (navigator.getUserMedia) navigator.getUserMedia({ video: true }, function (stream) {
+				navigator.getUserMedia({ video: true }, function (stream) {
 					// Get webcam feed if available
-					video.src = window.URL.createObjectURL(stream);
-					videoStream = stream;
-				}, function () {});
+					$scope.$applyAsync(function () {
+						$scope.signatureReady = false;
+						// Clear canvas
+						if (ctxBackground) ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
+						video.src = window.URL.createObjectURL(stream);
+						videoStream = stream;
+						$scope.setMode('streaming'); // Start video feed
+					});
+				}, function () {
+					return alert("Camera unavailable");
+				});
 			};
 
 			$scope.reversed = false;

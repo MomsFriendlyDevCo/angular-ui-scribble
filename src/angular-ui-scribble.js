@@ -113,16 +113,23 @@ angular.module('angular-ui-scribble',[])
 			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
 
 			$scope.setBackground = function(){
-				$scope.setMode('streaming'); // Start video feed
-				$scope.signatureReady = false;
-				// Clear canvas
-				if (ctxBackground)
-					ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
-				
-				if (navigator.getUserMedia) navigator.getUserMedia({video: true}, stream => { // Get webcam feed if available
-					video.src = window.URL.createObjectURL(stream);
-					videoStream = stream;
-				}, function() {});
+				if (!navigator.getUserMedia) return;
+
+				navigator.getUserMedia(
+					{ video: true },
+					stream => { // Get webcam feed if available
+						$scope.$applyAsync(() => {
+							$scope.signatureReady = false;
+							// Clear canvas
+							if (ctxBackground)
+								ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
+							video.src = window.URL.createObjectURL(stream);
+							videoStream = stream;
+							$scope.setMode('streaming'); // Start video feed
+						});
+					},
+					() => alert("Camera unavailable")
+				);
 			};
 
 			$scope.reversed = false;
@@ -219,7 +226,7 @@ angular.module('angular-ui-scribble',[])
 						$scope.$applyAsync(() => {
 							if ($scope.reversed)
 								$scope.flipContext()
-								$scope.signatureReady = true;
+							$scope.signatureReady = true;
 	
 							ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
 							ctxBackground.drawImage(image, 0, 0, canvasBackground.width, canvasBackground.height);
