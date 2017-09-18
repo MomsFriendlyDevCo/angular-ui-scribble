@@ -36,13 +36,15 @@ angular.module('angular-ui-scribble',[])
 		},
 		template: `
 			<div class="scribble" ng-class="editable ? 'scribble-editable' : 'scribble-not-editable'">
-				<input class="scribble-file-camera selectBackground" type="file" accept="image/*" capture="camera">
+				<input class="scribble-file-camera selectBackground-image" type="file" accept="image/*" >
+				<input class="scribble-file-camera selectBackground-video" type="file" accept="image/*" capture="camera">
 				<nav ng-if="editable" class="scribble-actions navbar navbar-default" style="width: {{width}}px">
 					<div class="navbar-form pull-left">
 						<div ng-if="buttons.camera" class="btn-group">
 							<a ng-if="mode!='streaming' && !isMobile" tooltip="Set background image" ng-click="setBackground()" class="btn btn-primary"><i class="fa fa-image"></i></a>
 							<a ng-if="mode=='streaming' && !isMobile" tooltip="Take screenshot" ng-click="screenshot()" class="btn btn-primary"><i class="fa fa-camera"></i></a>
-							<a ng-if="isMobile" ng-click="requestCamera()" class="btn btn-primary"><i class="fa fa-camera"></i></a>
+							<a ng-if="isMobile" ng-click="requestCamera('video')" class="btn btn-primary"><i class="fa fa-camera"></i></a>
+							<a ng-click="requestCamera('image')" class="btn btn-primary"><i class="fa fa-paperclip"></i></a>
 						</div>
 						<div class="btn-group">
 							<a ng-click="setMode('pen')" ng-class="mode=='pen' && 'active'" tooltip="Pen" class="btn btn-default"><i class="fa fa-pencil"></i></a>
@@ -74,7 +76,15 @@ angular.module('angular-ui-scribble',[])
 			// Mobile version {{{
 			var userAgent = navigator.userAgent;
 			$scope.isMobile = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(userAgent));
-			$scope.requestCamera = ()=> $element.find('input[type=file]').trigger('click');
+
+			$scope.requestCamera = (type)=> {
+				$scope.setMode('pen');
+
+				if (videoStream && videoStream.getTracks()[0])
+					videoStream.getTracks()[0].stop();
+
+				$element.find('.selectBackground-'+type).trigger('click')
+			};
 			// }}}
 
 			// Deal with user config {{{
@@ -107,28 +117,46 @@ angular.module('angular-ui-scribble',[])
 			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia || navigator.oGetUserMedia;
 
 			$scope.setBackground = function(){
-				$scope.setMode('streaming'); // Start video feed
-				if (navigator.getUserMedia) navigator.getUserMedia({video: true}, stream => { // Get webcam feed if available
-					video.src = window.URL.createObjectURL(stream);
-					videoStream = stream;
-				}, function() {});
+				if (!navigator.getUserMedia) return;
+
+				navigator.getUserMedia(
+					{ video: true },
+					stream => { // Get webcam feed if available
+						$scope.$applyAsync(() => {
+							$scope.signatureReady = false;
+							// Clear canvas
+							if (ctxBackground)
+								ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
+							video.src = window.URL.createObjectURL(stream);
+							videoStream = stream;
+							$scope.setMode('streaming'); // Start video feed
+						});
+					},
+					() => alert("Camera unavailable")
+				);
 			};
 
 			$scope.reversed = false;
+			$scope.flipContext = function(){
+				$scope.reversed = !$scope.reversed;
+				ctxBackground.translate(canvasBackground.width, 0);
+				ctxBackground.scale(-1, 1);
+			}; 
+
 			$scope.screenshot = function(){
 				$scope.setMode('pen');
+				$scope.signatureReady = false;
+
 				if(video.paused || video.ended) console.log("no video");;
 				if(video.paused || video.ended) return false;
 				//TODO: hack to flip context only once {{{
-				if (!$scope.reversed) {
-					$scope.reversed = true;
-					ctxBackground.translate(canvasBackground.width, 0);
-					ctxBackground.scale(-1, 1);
-				}
+				if (!$scope.reversed)
+					$scope.flipContext();
 				// }}}
 
 				ctxBackground.drawImage(video, 0, 0, $scope.width, $scope.height);
 				videoStream.getTracks()[0].stop();
+				$scope.signatureReady = true;
 			};
 			// }}}
 
@@ -186,24 +214,40 @@ angular.module('angular-ui-scribble',[])
 			// }}}
 
 			// Background - mobile {{{
-			var selectBackground = $element[0].querySelector('.selectBackground')
-			selectBackground.addEventListener('change', function(e){
-				var backgroundSrc = selectBackground.files[0];
-				var reader = new FileReader();
+			var selectBackgroundImage = $element[0].querySelector('.selectBackground-image');
+			var selectBackgroundVideo = $element[0].querySelector('.selectBackground-video');
+			
+			selectBackgroundImage.addEventListener('change', imageSelected(selectBackgroundImage));
+			selectBackgroundVideo.addEventListener('change', imageSelected(selectBackgroundVideo));
+			
+			function imageSelected (selectBackground) {
+				return function(){
+					if (!selectBackground.files.length) return;
 
-				reader.onload = function(event){
-					var image = new Image();
-					var ratio = window.devicePixelRatio || 1;
-
-					image.src = event.target.result;
-					image.onload = function () {
-						ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
-						ctxBackground.drawImage(image, 0, 0, canvasBackground.width, canvasBackground.height);
+					var backgroundSrc = selectBackground.files[0];
+					var reader = new FileReader();
+					
+					reader.onload = function(event){
+						var image = new Image();
+						image.src = event.target.result;
+						image.onload = () => loadImage(image)
 					};
+					
+					if (reader)
+						reader.readAsDataURL(backgroundSrc);
 				};
-
-				reader.readAsDataURL(backgroundSrc);
-			});
+			}
+			// Load image on canvas
+			function loadImage(image) {
+				$scope.$applyAsync(() => {
+					if ($scope.reversed)
+						$scope.flipContext();
+					$scope.signatureReady = true;
+					
+					ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
+					ctxBackground.drawImage(image, 0, 0, canvasBackground.width, canvasBackground.height);
+				});
+			}
 			// }}}
 
 			// Submit signature {{{
