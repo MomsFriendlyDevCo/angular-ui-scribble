@@ -41,7 +41,7 @@ angular.module('angular-ui-scribble',[])
 				<nav ng-if="editable" class="scribble-actions navbar navbar-default" style="width: {{width}}px">
 					<div class="navbar-form pull-left">
 						<div ng-if="buttons.camera" class="btn-group">
-							<a ng-if="mode!='streaming' && !isMobile" tooltip="Set background image" ng-click="setBackground()" class="btn btn-primary"><i class="fa fa-image"></i></a>
+							<a ng-if="mode!='streaming' && !isMobile" tooltip="Set background image" ng-click="setBackground()" class="btn btn-primary"><i class="fa fa-camera"></i></a>
 							<a ng-if="mode=='streaming' && !isMobile" tooltip="Take screenshot" ng-click="screenshot()" class="btn btn-primary"><i class="fa fa-camera"></i></a>
 							<a ng-if="isMobile" ng-click="requestCamera('video')" class="btn btn-primary"><i class="fa fa-camera"></i></a>
 							<a ng-click="requestCamera('image')" class="btn btn-primary"><i class="fa fa-paperclip"></i></a>
@@ -141,7 +141,7 @@ angular.module('angular-ui-scribble',[])
 				$scope.reversed = !$scope.reversed;
 				ctxBackground.translate(canvasBackground.width, 0);
 				ctxBackground.scale(-1, 1);
-			}; 
+			};
 
 			$scope.screenshot = function(){
 				$scope.setMode('pen');
@@ -216,23 +216,23 @@ angular.module('angular-ui-scribble',[])
 			// Background - mobile {{{
 			var selectBackgroundImage = $element[0].querySelector('.selectBackground-image');
 			var selectBackgroundVideo = $element[0].querySelector('.selectBackground-video');
-			
+
 			selectBackgroundImage.addEventListener('change', imageSelected(selectBackgroundImage));
 			selectBackgroundVideo.addEventListener('change', imageSelected(selectBackgroundVideo));
-			
+
 			function imageSelected (selectBackground) {
 				return function(){
 					if (!selectBackground.files.length) return;
 
 					var backgroundSrc = selectBackground.files[0];
 					var reader = new FileReader();
-					
+
 					reader.onload = function(event){
 						var image = new Image();
 						image.src = event.target.result;
 						image.onload = () => loadImage(image)
 					};
-					
+
 					if (reader)
 						reader.readAsDataURL(backgroundSrc);
 				};
@@ -243,7 +243,7 @@ angular.module('angular-ui-scribble',[])
 					if ($scope.reversed)
 						$scope.flipContext();
 					$scope.signatureReady = true;
-					
+
 					ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
 					ctxBackground.drawImage(image, 0, 0, canvasBackground.width, canvasBackground.height);
 				});
