@@ -87,7 +87,7 @@ angular.module('angular-ui-scribble', []).factory('$debounce', ['$timeout', func
 						$scope.signatureReady = false;
 						// Clear canvas
 						if (ctxBackground) ctxBackground.clearRect(0, 0, canvas.width, canvas.height);
-						video.src = window.URL.createObjectURL(stream);
+						video.srcObject = stream;
 						videoStream = stream;
 						$scope.setMode('streaming'); // Start video feed
 					});
