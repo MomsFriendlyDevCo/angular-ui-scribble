@@ -274,6 +274,8 @@ angular.module('angular-ui-scribble',[])
 					blob: $scope.getBlob(dataURI),
 				});
 			};
+
+			$scope.$on('angular-ui-scribble.submit', $scope.submit);
 			// }}}
 		}
 	}
